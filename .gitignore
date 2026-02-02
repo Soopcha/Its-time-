@@ -1,0 +1,41 @@
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+[Uu]serSettings/
+
+# Asset meta data
+*.pidb
+*.pdb
+*.mdb
+
+# Visual Studio
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+
+# Rider
+.idea/
+
+# OS generated
+.DS_Store
+.DS_Store?
+Thumbs.db
+
+# Builds
+*.apk
+*.aab
+*.unitypackage
+
+# Crashlytics
+crashlytics-build.properties
