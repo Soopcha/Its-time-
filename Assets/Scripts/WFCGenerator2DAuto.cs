@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class WFCGenerator2DAuto : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             ClearMap();
             Generate();
