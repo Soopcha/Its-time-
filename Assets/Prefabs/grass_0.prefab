@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tile2DAuto
   SpriteRenderer: {fileID: 4372364666478457350}
-  Weight: 50
+  Weight: 78
   TopEdge: []
   BottomEdge: []
   LeftEdge: []
