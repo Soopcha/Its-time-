@@ -5,15 +5,23 @@ using UnityEngine.InputSystem;
 
 public class WFCGenerator2DAuto : MonoBehaviour
 {
+    [Header("Тайлы")]
     public List<Tile2DAuto> TilePrefabs;
-    public Vector2Int MapSize = new Vector2Int(10, 10);
+
+    [Header("Размер карты")]
+    public Vector2Int MapSize = new Vector2Int(20, 20);
     public float TileSize = 1f;
 
+    [Header("Шум Перлина")]
+    public PerlinNoiseMap PerlinNoise;   // ? ДОБАВЬ ЭТО!
+    public bool UsePerlinZones = true;    // ? Включить/выключить зоны
+
     private List<Tile2DAuto>[,] possibleTiles;
+    private Tile2DAuto.ZoneType[,] zoneMap;  // ? Карта зон
 
     void Start()
     {
-        // Сначала посчитать края всех тайлов
+        // Считаем края всех тайлов
         foreach (var tile in TilePrefabs)
         {
             tile.CalculateEdges();
@@ -33,24 +41,31 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
     void Generate()
     {
+        // ШАГ 1: Генерируем карту зон через Perlin Noise
+        if (UsePerlinZones && PerlinNoise != null)
+        {
+            PerlinNoise.RandomizeOffset();  // Новый рандом каждый раз
+            GenerateZoneMap();
+        }
+
+        // ШАГ 2: Инициализируем WFC
         possibleTiles = new List<Tile2DAuto>[MapSize.x, MapSize.y];
 
-        // Инициализация — везде возможны все тайлы
         for (int x = 0; x < MapSize.x; x++)
         {
             for (int y = 0; y < MapSize.y; y++)
             {
-                possibleTiles[x, y] = new List<Tile2DAuto>(TilePrefabs);
+                // Фильтруем тайлы по зоне!
+                possibleTiles[x, y] = GetTilesForZone(x, y);
             }
         }
 
-        // Основной цикл WFC
+        // ШАГ 3: Основной цикл WFC
         int iterations = 0;
         int maxIterations = MapSize.x * MapSize.y * 10;
 
         while (iterations++ < maxIterations)
         {
-            // Найти клетку с минимальной энтропией
             Vector2Int? minPos = FindMinEntropyCell();
 
             if (minPos == null)
@@ -58,7 +73,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
             Vector2Int pos = minPos.Value;
 
-            // Коллапс
             if (possibleTiles[pos.x, pos.y].Count == 0)
             {
                 Debug.LogWarning($"Тупик в позиции {pos}! Перегенерация...");
@@ -69,11 +83,54 @@ public class WFCGenerator2DAuto : MonoBehaviour
             Tile2DAuto chosen = ChooseRandomTile(possibleTiles[pos.x, pos.y]);
             possibleTiles[pos.x, pos.y] = new List<Tile2DAuto> { chosen };
 
-            // Распространение
             Propagate(pos);
         }
 
         PlaceTiles();
+    }
+
+    void GenerateZoneMap()
+    {
+        zoneMap = new Tile2DAuto.ZoneType[MapSize.x, MapSize.y];
+
+        for (int x = 0; x < MapSize.x; x++)
+        {
+            for (int y = 0; y < MapSize.y; y++)
+            {
+                // Получаем тип зоны из PerlinNoiseMap
+                PerlinNoiseMap.ZoneType perlinZone = PerlinNoise.GetZoneType(x, y, MapSize.x, MapSize.y);
+
+                // Конвертируем в тип из Tile2DAuto
+                switch (perlinZone)
+                {
+                    case PerlinNoiseMap.ZoneType.Forest:
+                        zoneMap[x, y] = Tile2DAuto.ZoneType.Forest;
+                        break;
+                    case PerlinNoiseMap.ZoneType.Field:
+                        zoneMap[x, y] = Tile2DAuto.ZoneType.Field;
+                        break;
+                    case PerlinNoiseMap.ZoneType.Swamp:
+                        zoneMap[x, y] = Tile2DAuto.ZoneType.Swamp;
+                        break;
+                }
+            }
+        }
+    }
+
+    // НОВЫЙ МЕТОД: Получить тайлы подходящие для зоны
+    List<Tile2DAuto> GetTilesForZone(int x, int y)
+    {
+        if (!UsePerlinZones || zoneMap == null)
+        {
+            return new List<Tile2DAuto>(TilePrefabs);
+        }
+
+        Tile2DAuto.ZoneType zone = zoneMap[x, y];
+
+        // Фильтруем: тайлы у которых эта зона в списке AllowedZones
+        return TilePrefabs
+            .Where(t => t.CanBeInZone(zone))
+            .ToList();
     }
 
     Vector2Int? FindMinEntropyCell()
@@ -142,11 +199,10 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
             List<Tile2DAuto> here = possibleTiles[pos.x, pos.y];
 
-            // Проверяем 4 соседа
-            TryConstrain(pos, new Vector2Int(1, 0), here, queue);  // справа
-            TryConstrain(pos, new Vector2Int(-1, 0), here, queue); // слева
-            TryConstrain(pos, new Vector2Int(0, 1), here, queue);  // сверху
-            TryConstrain(pos, new Vector2Int(0, -1), here, queue); // снизу
+            TryConstrain(pos, new Vector2Int(1, 0), here, queue);
+            TryConstrain(pos, new Vector2Int(-1, 0), here, queue);
+            TryConstrain(pos, new Vector2Int(0, 1), here, queue);
+            TryConstrain(pos, new Vector2Int(0, -1), here, queue);
         }
     }
 
@@ -154,7 +210,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
     {
         Vector2Int neighborPos = pos + offset;
 
-        // Проверка границ
         if (neighborPos.x < 0 || neighborPos.x >= MapSize.x ||
             neighborPos.y < 0 || neighborPos.y >= MapSize.y)
             return;
@@ -163,16 +218,14 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
         int before = neighborPossible.Count;
 
-        // Убираем тайлы которые не совместимы ни с одним из текущих
         neighborPossible.RemoveAll(neighborTile =>
         {
-            // Сосед должен быть совместим хотя бы с одним тайлом тут
             foreach (var hereTile in here)
             {
                 if (IsCompatible(hereTile, neighborTile, offset))
-                    return false; // НЕ удалять — совместим
+                    return false;
             }
-            return true; // Удалить — ни с кем не совместим
+            return true;
         });
 
         if (neighborPossible.Count < before)
@@ -183,28 +236,14 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
     bool IsCompatible(Tile2DAuto hereTile, Tile2DAuto neighborTile, Vector2Int offset)
     {
-        // offset показывает где сосед относительно нас
         if (offset == new Vector2Int(1, 0))
-        {
-            // Сосед СПРАВА от нас
-            // Наш правый край должен совпадать с его левым
             return neighborTile.CanBeRightOf(hereTile);
-        }
         else if (offset == new Vector2Int(-1, 0))
-        {
-            // Сосед СЛЕВА от нас
             return neighborTile.CanBeLeftOf(hereTile);
-        }
         else if (offset == new Vector2Int(0, 1))
-        {
-            // Сосед СВЕРХУ от нас
             return neighborTile.CanBeAbove(hereTile);
-        }
         else if (offset == new Vector2Int(0, -1))
-        {
-            // Сосед СНИЗУ от нас
             return neighborTile.CanBeBelow(hereTile);
-        }
 
         return false;
     }

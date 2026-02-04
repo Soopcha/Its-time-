@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile2DAuto : MonoBehaviour
@@ -6,6 +7,27 @@ public class Tile2DAuto : MonoBehaviour
 
     [Range(1, 100)]
     public int Weight = 50;
+
+    [Header("Tile's zoneee")]
+    public List<ZoneType> AllowedZones = new List<ZoneType>();  // ? СПИСОК!
+
+    // Типы зон
+    public enum ZoneType
+    {
+        Swamp,    // Болото
+        Field,    // Поле
+        Forest    // Лес
+    }
+
+    // Проверка: может ли тайл быть в этой зоне?
+    public bool CanBeInZone(ZoneType zone)
+    {
+        // Если список пустой — может быть везде
+        if (AllowedZones.Count == 0)
+            return true;
+
+        return AllowedZones.Contains(zone);
+    }
 
     // Цвета краёв — заполняются автоматически
     [HideInInspector] public Color[] TopEdge;
