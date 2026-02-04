@@ -399,7 +399,7 @@ MonoBehaviour:
   - {fileID: 6681271256596579578, guid: edf6093a239c4ea429e030d979e00340, type: 3}
   - {fileID: 5018744548210725422, guid: 7c1516bb343af1f468366b47beb17c77, type: 3}
   - {fileID: 789253314892363, guid: 9e30c90b7b071cc41844e485e4f4bb0c, type: 3}
-  MapSize: {x: 40, y: 20}
+  MapSize: {x: 60, y: 20}
   TileSize: 1
   PerlinNoise: {fileID: 1912395145}
   UsePerlinZones: 1

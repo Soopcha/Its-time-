@@ -8,6 +8,8 @@ public class WFCGenerator2DAuto : MonoBehaviour
     [Header("Тайлы")]
     public List<Tile2DAuto> TilePrefabs;
 
+    private Tile2DAuto.ZoneType currentZone;
+
     [Header("Размер карты")]
     public Vector2Int MapSize = new Vector2Int(20, 20);
     public float TileSize = 1f;
@@ -44,7 +46,7 @@ public class WFCGenerator2DAuto : MonoBehaviour
         // ШАГ 1: Генерируем карту зон через Perlin Noise
         if (UsePerlinZones && PerlinNoise != null)
         {
-            PerlinNoise.RandomizeOffset();  // Новый рандом каждый раз
+            PerlinNoise.RandomizeOffset();
             GenerateZoneMap();
         }
 
@@ -55,7 +57,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
         {
             for (int y = 0; y < MapSize.y; y++)
             {
-                // Фильтруем тайлы по зоне!
                 possibleTiles[x, y] = GetTilesForZone(x, y);
             }
         }
@@ -80,6 +81,10 @@ public class WFCGenerator2DAuto : MonoBehaviour
                 return;
             }
 
+            // Получаем зону для этой позиции
+            currentZone = GetZoneAtPosition(pos.x, pos.y);
+
+            // Выбираем тайл с учётом веса в этой зоне
             Tile2DAuto chosen = ChooseRandomTile(possibleTiles[pos.x, pos.y]);
             possibleTiles[pos.x, pos.y] = new List<Tile2DAuto> { chosen };
 
@@ -87,6 +92,15 @@ public class WFCGenerator2DAuto : MonoBehaviour
         }
 
         PlaceTiles();
+    }
+
+    // НОВЫЙ МЕТОД: Получить зону в позиции
+    Tile2DAuto.ZoneType GetZoneAtPosition(int x, int y)
+    {
+        if (!UsePerlinZones || zoneMap == null)
+            return Tile2DAuto.ZoneType.Field;  // По умолчанию
+
+        return zoneMap[x, y];
     }
 
     void GenerateZoneMap()
@@ -168,13 +182,25 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
     Tile2DAuto ChooseRandomTile(List<Tile2DAuto> tiles)
     {
-        float totalWeight = tiles.Sum(t => t.Weight);
+        // Считаем сумму весов С УЧЁТОМ ЗОНЫ
+        float totalWeight = 0f;
+        foreach (var tile in tiles)
+        {
+            totalWeight += tile.GetWeightForZone(currentZone);
+        }
+
+        // Если все веса = 0, выбираем случайный
+        if (totalWeight <= 0)
+        {
+            return tiles[Random.Range(0, tiles.Count)];
+        }
+
         float random = Random.Range(0f, totalWeight);
         float current = 0f;
 
         foreach (var tile in tiles)
         {
-            current += tile.Weight;
+            current += tile.GetWeightForZone(currentZone);
             if (random <= current)
                 return tile;
         }

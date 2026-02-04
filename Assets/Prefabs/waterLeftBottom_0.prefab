@@ -105,8 +105,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tile2DAuto
   SpriteRenderer: {fileID: 6545188192861789306}
-  Weight: 12
-  AllowedZones: 0100000002000000
+  ZoneWeights:
+  - Zone: 1
+    Weight: 15
+  - Zone: 2
+    Weight: 16
+  DefaultWeight: 50
   TopEdge:
   - {r: 0.39607844, g: 0.5176471, b: 0.36078432, a: 1}
   - {r: 0.39607844, g: 0.5176471, b: 0.36078432, a: 1}

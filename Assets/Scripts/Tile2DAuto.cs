@@ -5,11 +5,26 @@ public class Tile2DAuto : MonoBehaviour
 {
     public SpriteRenderer SpriteRenderer;
 
-    [Range(1, 100)]
-    public int Weight = 50;
+    [Header("Веса по зонам")]
+    public List<ZoneWeight> ZoneWeights = new List<ZoneWeight>();
 
-    [Header("Tile's zoneee")]
-    public List<ZoneType> AllowedZones = new List<ZoneType>();  // ? СПИСОК!
+    [Range(1, 100)]
+    public int DefaultWeight = 50;  // Вес по умолчанию если зона не указана
+
+    // Класс для хранения веса в конкретной зоне
+    [System.Serializable]
+    public class ZoneWeight
+    {
+        public ZoneType Zone;
+        [Range(0, 100)]
+        public int Weight;
+
+        public ZoneWeight(ZoneType zone, int weight)
+        {
+            Zone = zone;
+            Weight = weight;
+        }
+    }
 
     // Типы зон
     public enum ZoneType
@@ -19,14 +34,36 @@ public class Tile2DAuto : MonoBehaviour
         Forest    // Лес
     }
 
+    // Получить вес для конкретной зоны
+    public int GetWeightForZone(ZoneType zone)
+    {
+        // Ищем вес для этой зоны
+        foreach (var zw in ZoneWeights)
+        {
+            if (zw.Zone == zone)
+                return zw.Weight;
+        }
+
+        // Если не нашли — вернуть дефолтный
+        return DefaultWeight;
+    }
+
     // Проверка: может ли тайл быть в этой зоне?
     public bool CanBeInZone(ZoneType zone)
     {
-        // Если список пустой — может быть везде
-        if (AllowedZones.Count == 0)
-            return true;
+        // Если список пустой — используем DefaultWeight
+        if (ZoneWeights.Count == 0)
+            return DefaultWeight > 0;
 
-        return AllowedZones.Contains(zone);
+        // Ищем зону в списке
+        foreach (var zw in ZoneWeights)
+        {
+            if (zw.Zone == zone)
+                return zw.Weight > 0;  // Может быть ТОЛЬКО если вес > 0
+        }
+
+        // Если зона НЕ указана в списке — НЕ может быть там!
+        return false;  // ? ЭТО ВАЖНО! Было DefaultWeight > 0
     }
 
     // Цвета краёв — заполняются автоматически
@@ -62,52 +99,42 @@ public class Tile2DAuto : MonoBehaviour
         LeftEdge = new Color[height];
         RightEdge = new Color[height];
 
-        // Верхний край (y = height - 1)
         for (int x = 0; x < width; x++)
         {
             TopEdge[x] = tex.GetPixel(startX + x, startY + height - 1);
         }
 
-        // Нижний край (y = 0)
         for (int x = 0; x < width; x++)
         {
             BottomEdge[x] = tex.GetPixel(startX + x, startY);
         }
 
-        // Левый край (x = 0)
         for (int y = 0; y < height; y++)
         {
             LeftEdge[y] = tex.GetPixel(startX, startY + y);
         }
 
-        // Правый край (x = width - 1)
         for (int y = 0; y < height; y++)
         {
             RightEdge[y] = tex.GetPixel(startX + width - 1, startY + y);
         }
     }
 
-    // Может ли этот тайл быть СПРАВА от other?
     public bool CanBeRightOf(Tile2DAuto other)
     {
-        // Мой левый край должен совпадать с его правым
         return EdgesMatch(LeftEdge, other.RightEdge);
     }
 
-    // Может ли этот тайл быть СЛЕВА от other?
     public bool CanBeLeftOf(Tile2DAuto other)
     {
         return EdgesMatch(RightEdge, other.LeftEdge);
     }
 
-    // Может ли этот тайл быть СВЕРХУ от other?
     public bool CanBeAbove(Tile2DAuto other)
     {
-        // Мой нижний край должен совпадать с его верхним
         return EdgesMatch(BottomEdge, other.TopEdge);
     }
 
-    // Может ли этот тайл быть СНИЗУ от other?
     public bool CanBeBelow(Tile2DAuto other)
     {
         return EdgesMatch(TopEdge, other.BottomEdge);
@@ -128,7 +155,6 @@ public class Tile2DAuto : MonoBehaviour
 
     private bool ColorsSimilar(Color a, Color b)
     {
-        // Порог похожести (можно менять)
         float threshold = 0.05f;
 
         return Mathf.Abs(a.r - b.r) < threshold &&
