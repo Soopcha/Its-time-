@@ -15,21 +15,28 @@ public class WFCGenerator2DAuto : MonoBehaviour
     public float TileSize = 1f;
 
     [Header("Шум Перлина")]
-    public PerlinNoiseMap PerlinNoise;   // ? ДОБАВЬ ЭТО!
-    public bool UsePerlinZones = true;    // ? Включить/выключить зоны
+    public PerlinNoiseMap PerlinNoise;
+    public bool UsePerlinZones = true;
+
+    [Header("Настройки генерации")]
+    public int MaxRetries = 20;              // Максимум попыток
+    public bool ShowDebugLogs = true;        // Показывать логи
 
     private List<Tile2DAuto>[,] possibleTiles;
-    private Tile2DAuto.ZoneType[,] zoneMap;  // ? Карта зон
+    private Tile2DAuto.ZoneType[,] zoneMap;
+
+    // Счётчики для статистики
+    private int currentRetryCount = 0;
+    private int totalDeadEnds = 0;
 
     void Start()
     {
-        // Считаем края всех тайлов
         foreach (var tile in TilePrefabs)
         {
             tile.CalculateEdges();
         }
 
-        Generate();
+        GenerateWithRetry();
     }
 
     void Update()
@@ -37,13 +44,59 @@ public class WFCGenerator2DAuto : MonoBehaviour
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             ClearMap();
-            Generate();
+            GenerateWithRetry();
         }
     }
 
-    void Generate()
+    // НОВЫЙ МЕТОД: Генерация с повторными попытками
+    void GenerateWithRetry()
     {
-        // ШАГ 1: Генерируем карту зон через Perlin Noise
+        currentRetryCount = 0;
+        totalDeadEnds = 0;
+
+        bool success = false;
+
+        while (!success && currentRetryCount < MaxRetries)
+        {
+            currentRetryCount++;
+            success = TryGenerate();
+
+            if (!success)
+            {
+                ClearMap();
+
+                if (ShowDebugLogs)
+                {
+                    Debug.Log($"Попытка {currentRetryCount}/{MaxRetries} не удалась. Тупиков: {totalDeadEnds}. Пробуем снова...");
+                }
+            }
+        }
+
+        if (success)
+        {
+            if (ShowDebugLogs && currentRetryCount > 1)
+            {
+                Debug.Log($"? Карта сгенерирована с {currentRetryCount} попытки! Всего тупиков: {totalDeadEnds}");
+            }
+            else if (ShowDebugLogs)
+            {
+                Debug.Log($"? Карта сгенерирована с первой попытки!");
+            }
+        }
+        else
+        {
+            Debug.LogError($"? НЕ УДАЛОСЬ сгенерировать карту за {MaxRetries} попыток! Тупиков: {totalDeadEnds}");
+            Debug.LogWarning("Возможные причины:");
+            Debug.LogWarning("  - Тайлы плохо стыкуются между собой");
+            Debug.LogWarning("  - Слишком мало тайлов для какой-то зоны");
+            Debug.LogWarning("  - Края тайлов не совпадают по цветам");
+        }
+    }
+
+    // НОВЫЙ МЕТОД: Попытка генерации (возвращает true если успех)
+    bool TryGenerate()
+    {
+        // ШАГ 1: Генерируем карту зон
         if (UsePerlinZones && PerlinNoise != null)
         {
             PerlinNoise.RandomizeOffset();
@@ -58,12 +111,24 @@ public class WFCGenerator2DAuto : MonoBehaviour
             for (int y = 0; y < MapSize.y; y++)
             {
                 possibleTiles[x, y] = GetTilesForZone(x, y);
+
+                // Проверяем что есть хотя бы один тайл для этой клетки
+                if (possibleTiles[x, y].Count == 0)
+                {
+                    if (ShowDebugLogs)
+                    {
+                        Tile2DAuto.ZoneType zone = GetZoneAtPosition(x, y);
+                        Debug.LogWarning($"Нет тайлов для зоны {zone} в позиции ({x}, {y})!");
+                    }
+                    return false;
+                }
             }
         }
 
         // ШАГ 3: Основной цикл WFC
         int iterations = 0;
         int maxIterations = MapSize.x * MapSize.y * 10;
+        int deadEndsThisRun = 0;
 
         while (iterations++ < maxIterations)
         {
@@ -74,31 +139,71 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
             Vector2Int pos = minPos.Value;
 
+            // Проверка на тупик
             if (possibleTiles[pos.x, pos.y].Count == 0)
             {
-                Debug.LogWarning($"Тупик в позиции {pos}! Перегенерация...");
-                Generate();
-                return;
+                deadEndsThisRun++;
+                totalDeadEnds++;
+                return false;  // Тупик — возвращаем неудачу
             }
 
-            // Получаем зону для этой позиции
             currentZone = GetZoneAtPosition(pos.x, pos.y);
-
-            // Выбираем тайл с учётом веса в этой зоне
             Tile2DAuto chosen = ChooseRandomTile(possibleTiles[pos.x, pos.y]);
             possibleTiles[pos.x, pos.y] = new List<Tile2DAuto> { chosen };
 
             Propagate(pos);
         }
 
+        // ШАГ 4: Проверяем что ВСЕ клетки заполнены
+        if (!IsMapFullyGenerated())
+        {
+            if (ShowDebugLogs)
+            {
+                int emptyCount = CountEmptyCells();
+                Debug.LogWarning($"Карта не полностью заполнена! Пустых клеток: {emptyCount}");
+            }
+            return false;
+        }
+
+        // ШАГ 5: Размещаем тайлы
         PlaceTiles();
+
+        return true;
     }
 
-    // НОВЫЙ МЕТОД: Получить зону в позиции
+    // НОВЫЙ МЕТОД: Проверка что все клетки заполнены
+    bool IsMapFullyGenerated()
+    {
+        for (int x = 0; x < MapSize.x; x++)
+        {
+            for (int y = 0; y < MapSize.y; y++)
+            {
+                if (possibleTiles[x, y].Count != 1)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    // НОВЫЙ МЕТОД: Подсчёт пустых клеток
+    int CountEmptyCells()
+    {
+        int count = 0;
+        for (int x = 0; x < MapSize.x; x++)
+        {
+            for (int y = 0; y < MapSize.y; y++)
+            {
+                if (possibleTiles[x, y].Count != 1)
+                    count++;
+            }
+        }
+        return count;
+    }
+
     Tile2DAuto.ZoneType GetZoneAtPosition(int x, int y)
     {
         if (!UsePerlinZones || zoneMap == null)
-            return Tile2DAuto.ZoneType.Field;  // По умолчанию
+            return Tile2DAuto.ZoneType.Field;
 
         return zoneMap[x, y];
     }
@@ -111,10 +216,8 @@ public class WFCGenerator2DAuto : MonoBehaviour
         {
             for (int y = 0; y < MapSize.y; y++)
             {
-                // Получаем тип зоны из PerlinNoiseMap
                 PerlinNoiseMap.ZoneType perlinZone = PerlinNoise.GetZoneType(x, y, MapSize.x, MapSize.y);
 
-                // Конвертируем в тип из Tile2DAuto
                 switch (perlinZone)
                 {
                     case PerlinNoiseMap.ZoneType.Forest:
@@ -131,7 +234,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
         }
     }
 
-    // НОВЫЙ МЕТОД: Получить тайлы подходящие для зоны
     List<Tile2DAuto> GetTilesForZone(int x, int y)
     {
         if (!UsePerlinZones || zoneMap == null)
@@ -141,7 +243,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
         Tile2DAuto.ZoneType zone = zoneMap[x, y];
 
-        // Фильтруем: тайлы у которых эта зона в списке AllowedZones
         return TilePrefabs
             .Where(t => t.CanBeInZone(zone))
             .ToList();
@@ -182,14 +283,12 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
     Tile2DAuto ChooseRandomTile(List<Tile2DAuto> tiles)
     {
-        // Считаем сумму весов С УЧЁТОМ ЗОНЫ
         float totalWeight = 0f;
         foreach (var tile in tiles)
         {
             totalWeight += tile.GetWeightForZone(currentZone);
         }
 
-        // Если все веса = 0, выбираем случайный
         if (totalWeight <= 0)
         {
             return tiles[Random.Range(0, tiles.Count)];
