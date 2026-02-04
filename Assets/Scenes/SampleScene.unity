@@ -378,6 +378,9 @@ MonoBehaviour:
   - {fileID: 4887278927490329977, guid: 1ec0b18f2cc52ec4a974f939413c3b91, type: 3}
   - {fileID: 3579039850845828153, guid: 4bac2bb528ce1d44084e0597f5465e06, type: 3}
   - {fileID: 3691386286064458528, guid: 2df61906356931f4781934cc8d400efd, type: 3}
+  - {fileID: 1925344579668468364, guid: 45db3f201eaa7744bbb1a15d536cf3a3, type: 3}
+  - {fileID: 2997649644194552955, guid: 4b0658feed309244f9d03064490d3415, type: 3}
+  - {fileID: 6616509927549738310, guid: 09ad04866975cfb44becfb5485198cba, type: 3}
   MapSize: {x: 10, y: 10}
   TileSize: 1
 --- !u!4 &1912395144
