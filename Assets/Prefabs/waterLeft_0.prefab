@@ -110,7 +110,7 @@ MonoBehaviour:
     Weight: 15
   - Zone: 2
     Weight: 16
-  DefaultWeight: 50
+  DefaultWeight: 23
   TopEdge:
   - {r: 0.4862745, g: 0.65882355, b: 0.8352941, a: 1}
   - {r: 0.4862745, g: 0.65882355, b: 0.8352941, a: 1}
