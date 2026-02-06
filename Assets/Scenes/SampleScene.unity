@@ -226,7 +226,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -309,7 +309,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000e559df880d02ad40
+  m_ApplyToSortingLayers: 00000000e559df880d02ad40199febc4
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -388,9 +388,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b5211c219537047b71c63ed2da47c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  MoveSpeed: 3
+  MoveSpeed: 10
   Rb: {fileID: 852425544}
   SpriteRenderer: {fileID: 852425545}
+  BaseSortingOrder: 100
 --- !u!61 &852425543
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -511,7 +512,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1998628379
   m_SortingLayer: 2
-  m_SortingOrder: 10
+  m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7485453407209300106, guid: 6a3f5102d0fd96647ad74a7dca9691ad, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -615,6 +616,23 @@ MonoBehaviour:
   UsePerlinZones: 1
   MaxRetries: 20
   ShowDebugLogs: 1
+  TreeOverlays:
+  - TileNameContains: poplarPart1_0
+    OverlaySprite: {fileID: 5244578037985263259, guid: 7d8006667278cf448a3db98bcf3a4849, type: 3}
+  - TileNameContains: poplarPart2_0
+    OverlaySprite: {fileID: 2413417941402600734, guid: 577013c519643124cb6451a11b2a5f06, type: 3}
+  - TileNameContains: poplarPart3_0
+    OverlaySprite: {fileID: 8882491917917841586, guid: 1e9f9fc059739e0479a507a203296000, type: 3}
+  - TileNameContains: poplarPart4_0
+    OverlaySprite: {fileID: 744976638374961505, guid: f278c7f90f4f54e4dad223391ccf26eb, type: 3}
+  - TileNameContains: poplarPart5_0
+    OverlaySprite: {fileID: 2050413999207177585, guid: 1c0407195ebf6ee4480844ef33699feb, type: 3}
+  - TileNameContains: poplarPart6_0
+    OverlaySprite: {fileID: 2812336571626661698, guid: 390f6f815f3414849aa1ddffcaf86648, type: 3}
+  - TileNameContains: poplarPart7_0
+    OverlaySprite: {fileID: 8873274933473592214, guid: c9b4745e677003c41a5b98075bd90d3a, type: 3}
+  - TileNameContains: poplarPart8_0
+    OverlaySprite: {fileID: 7368288373060561708, guid: eabe7035428b1914ba848c970620ee95, type: 3}
 --- !u!4 &1912395144
 Transform:
   m_ObjectHideFlags: 0

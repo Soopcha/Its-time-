@@ -10,11 +10,13 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D Rb;
     public SpriteRenderer SpriteRenderer;
 
+    [Header("Сортировка")]
+    public int BaseSortingOrder = 10000;  // ? ИЗМЕНЕНО: было 100, стало 1000
+
     private Vector2 moveInput;
 
     void Update()
     {
-        // Читаем ввод с клавиатуры
         moveInput = Vector2.zero;
 
         if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
@@ -26,11 +28,9 @@ public class PlayerController : MonoBehaviour
         if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
             moveInput.x = 1;
 
-        // Нормализуем чтобы по диагонали не бежал быстрее
         if (moveInput.magnitude > 1f)
             moveInput.Normalize();
 
-        // Флип спрайта влево/вправо
         if (moveInput.x < 0)
             SpriteRenderer.flipX = true;
         else if (moveInput.x > 0)
@@ -39,7 +39,12 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Двигаем персонажа через физику
         Rb.linearVelocity = moveInput * MoveSpeed;
+    }
+
+    void LateUpdate()
+    {
+        // Теперь order будет: 1000 - 126 = 874 (положительный!)
+        SpriteRenderer.sortingOrder = BaseSortingOrder - Mathf.RoundToInt(transform.position.y * 10);
     }
 }
