@@ -445,23 +445,20 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
     void TryAddOverlay(GameObject tile, string tileName, float tileY)
     {
-        if (!tileName.Contains("poplarPart"))
+        if (!tileName.Contains("poplarPart1_0"))
             return;
 
         foreach (var data in TreeOverlays)
         {
-            if (tileName.Contains(data.TileNameContains) && data.OverlaySprite != null)
+            if (data.OverlaySprite != null)
             {
                 TreeOverlay overlay = tile.AddComponent<TreeOverlay>();
                 overlay.OverlaySprite = data.OverlaySprite;
                 overlay.UseYForSorting = true;
                 overlay.BaseOverlayOrder = 10000;
-
-                // Просто используем Y тайла!
+                overlay.OverlaySortingLayer = "Player";
                 overlay.TreeBaseY = tileY;
-
-                int order = 10000 - Mathf.RoundToInt(tileY * 10);
-                Debug.Log($"{tileName}: Y={tileY}, order={order}");
+                overlay.SpriteOffset = Vector2.zero;  // БЕЗ СМЕЩЕНИЯ!
 
                 return;
             }

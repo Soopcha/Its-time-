@@ -5,15 +5,16 @@ public class TreeOverlay : MonoBehaviour
     [Header("Оверлейный спрайт")]
     public Sprite OverlaySprite;
 
-
-
     [Header("Sorting")]
-    public string OverlaySortingLayer = "Player";  // Такой же как у персонажа!
+    public string OverlaySortingLayer = "Player";
     public int BaseOverlayOrder = 10000;
 
     [Header("Настройки")]
     public bool UseYForSorting = true;
-    public float TreeBaseY = 0f;  // Y основания дерева (вычисляется автоматически)
+    public float TreeBaseY = 0f;
+
+    [Header("Смещение спрайта (подстрой под свой спрайт!)")]
+    public Vector2 SpriteOffset = new Vector2(0f, 2f);
 
     private SpriteRenderer overlayRenderer;
 
@@ -28,7 +29,7 @@ public class TreeOverlay : MonoBehaviour
 
         GameObject overlayObj = new GameObject("TreeOverlay");
         overlayObj.transform.SetParent(transform);
-        overlayObj.transform.localPosition = Vector3.zero;
+        overlayObj.transform.localPosition = new Vector3(SpriteOffset.x, SpriteOffset.y, 0);
         overlayObj.transform.localRotation = Quaternion.identity;
         overlayObj.transform.localScale = Vector3.one;
 
@@ -37,15 +38,15 @@ public class TreeOverlay : MonoBehaviour
         overlayRenderer.sortingLayerName = OverlaySortingLayer;
 
         UpdateSorting();
+
+        // ДЕБАГ
+        Debug.Log($"TreeOverlay создан: TreeBaseY={TreeBaseY}, Order={overlayRenderer.sortingOrder}");
     }
 
     void UpdateSorting()
     {
         if (overlayRenderer == null) return;
-
-        // Используем TreeBaseY вместо transform.position.y!
-        float yForSorting = TreeBaseY;
-        overlayRenderer.sortingOrder = BaseOverlayOrder - Mathf.RoundToInt(yForSorting * 10);
+        overlayRenderer.sortingOrder = BaseOverlayOrder - Mathf.RoundToInt(TreeBaseY * 10);
     }
 
     void LateUpdate()
