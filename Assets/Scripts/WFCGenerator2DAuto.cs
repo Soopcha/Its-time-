@@ -29,6 +29,16 @@ public class WFCGenerator2DAuto : MonoBehaviour
     private int currentRetryCount = 0;
     private int totalDeadEnds = 0;
 
+    [Header("Оверлеи для деревьев")]
+    public List<TreeOverlayData> TreeOverlays = new List<TreeOverlayData>();
+
+    [System.Serializable]
+    public class TreeOverlayData
+    {
+        public string TileNameContains = "poplarPart";  // Часть имени тайла
+        public Sprite OverlaySprite;                     // Прозрачный спрайт
+    }
+
     void Start()
     {
         foreach (var tile in TilePrefabs)
@@ -383,12 +393,44 @@ public class WFCGenerator2DAuto : MonoBehaviour
                 {
                     Tile2DAuto prefab = possibleTiles[x, y][0];
                     Vector3 position = new Vector3(x * TileSize, y * TileSize, 0);
-                    Instantiate(prefab, position, Quaternion.identity, transform);
+                    GameObject placed = Instantiate(prefab.gameObject, position, Quaternion.identity, transform);
+
+                    SpriteRenderer sr = placed.GetComponent<SpriteRenderer>();
+                    if (sr != null)
+                    {
+                        sr.sortingOrder = 0;
+                    }
+
+                    // Передаём Y позицию!
+                    TryAddOverlay(placed, prefab.name, y * TileSize);
                 }
             }
         }
     }
 
+    void TryAddOverlay(GameObject tile, string tileName, float tileY)
+    {
+        if (!tileName.Contains("poplarPart1_0"))
+            return;
+
+        foreach (var data in TreeOverlays)
+        {
+            if (data.OverlaySprite != null)
+            {
+                TreeOverlay overlay = tile.AddComponent<TreeOverlay>();
+                overlay.OverlaySprite = data.OverlaySprite;
+                overlay.BaseOverlayOrder = 10000;
+                overlay.OverlaySortingLayer = "Player";
+                overlay.TreeBaseY = tileY;
+                overlay.PixelsPerUnit = 32f;
+                // УБРАЛ: overlay.UseYForSorting = true;
+                // УБРАЛ: overlay.SpriteOffset = ...
+                // УБРАЛ: overlay.AutoAlignToTile = ...
+
+                return;
+            }
+        }
+    }
     void ClearMap()
     {
         foreach (Transform child in transform)

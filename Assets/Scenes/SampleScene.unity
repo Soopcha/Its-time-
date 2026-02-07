@@ -226,7 +226,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -309,7 +309,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000e559df880d02ad40
+  m_ApplyToSortingLayers: 00000000e559df880d02ad40199febc4
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -388,9 +388,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b5211c219537047b71c63ed2da47c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  MoveSpeed: 3
+  MoveSpeed: 10
   Rb: {fileID: 852425544}
   SpriteRenderer: {fileID: 852425545}
+  BaseSortingOrder: 10000
+  FeetOffsetY: -0.7
 --- !u!61 &852425543
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -425,17 +427,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.82771456}
+  m_Offset: {x: 0, y: 0.14013481}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
+    pivot: {x: 0.5, y: 0}
     oldSize: {x: 0.875, y: 2}
     newSize: {x: 0.875, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.875, y: 0.34457088}
+  m_Size: {x: 0.875, y: 0.36473465}
   m_EdgeRadius: 0
 --- !u!50 &852425544
 Rigidbody2D:
@@ -511,7 +513,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1998628379
   m_SortingLayer: 2
-  m_SortingOrder: 10
+  m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7485453407209300106, guid: 6a3f5102d0fd96647ad74a7dca9691ad, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -615,6 +617,9 @@ MonoBehaviour:
   UsePerlinZones: 1
   MaxRetries: 20
   ShowDebugLogs: 1
+  TreeOverlays:
+  - TileNameContains: poplarPart2_0
+    OverlaySprite: {fileID: 3083486608591156851, guid: ba519ee1f0627f144891c7a07e8bfaa7, type: 3}
 --- !u!4 &1912395144
 Transform:
   m_ObjectHideFlags: 0

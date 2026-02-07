@@ -47,5 +47,8 @@ TagManager:
   - name: Player
     uniqueID: 2296338917
     locked: 0
+  - name: Foreground
+    uniqueID: 3303776025
+    locked: 0
   m_RenderingLayers:
   - Default

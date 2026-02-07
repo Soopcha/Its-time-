@@ -10,11 +10,16 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D Rb;
     public SpriteRenderer SpriteRenderer;
 
+    [Header("Сортировка")]
+    public int BaseSortingOrder = 10000;
+
+    [Header("Смещение для сортировки (к ногам)")]
+    public float FeetOffsetY = -0.5f;  // Сколько вниз от центра до ног
+
     private Vector2 moveInput;
 
     void Update()
     {
-        // Читаем ввод с клавиатуры
         moveInput = Vector2.zero;
 
         if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
@@ -26,11 +31,9 @@ public class PlayerController : MonoBehaviour
         if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
             moveInput.x = 1;
 
-        // Нормализуем чтобы по диагонали не бежал быстрее
         if (moveInput.magnitude > 1f)
             moveInput.Normalize();
 
-        // Флип спрайта влево/вправо
         if (moveInput.x < 0)
             SpriteRenderer.flipX = true;
         else if (moveInput.x > 0)
@@ -39,7 +42,18 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Двигаем персонажа через физику
         Rb.linearVelocity = moveInput * MoveSpeed;
+    }
+
+    //void LateUpdate()
+    //{
+    //    // Сортируем по НОГАМ персонажа!
+    //    float feetY = transform.position.y + FeetOffsetY;
+    //    SpriteRenderer.sortingOrder = BaseSortingOrder - Mathf.RoundToInt(feetY * 10);
+    //}
+    void LateUpdate()
+    {
+        // Pivot у ног — всё просто!
+        SpriteRenderer.sortingOrder = BaseSortingOrder - Mathf.RoundToInt(transform.position.y * 10);
     }
 }
