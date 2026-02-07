@@ -383,25 +383,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
         return false;
     }
 
-    //void PlaceTiles()
-    //{
-    //    for (int x = 0; x < MapSize.x; x++)
-    //    {
-    //        for (int y = 0; y < MapSize.y; y++)
-    //        {
-    //            if (possibleTiles[x, y].Count == 1)
-    //            {
-    //                Tile2DAuto prefab = possibleTiles[x, y][0];
-    //                Vector3 position = new Vector3(x * TileSize, y * TileSize, 0);
-    //                GameObject placed = Instantiate(prefab.gameObject, position, Quaternion.identity, transform);
-
-    //                // Проверяем нужен ли оверлей
-    //                TryAddOverlay(placed, prefab.name);
-    //            }
-    //        }
-    //    }
-    //}
-
     void PlaceTiles()
     {
         for (int x = 0; x < MapSize.x; x++)
@@ -426,22 +407,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
             }
         }
     }
-    //void TryAddOverlay(GameObject tile, string tileName)
-    //{
-    //    foreach (var data in TreeOverlays)
-    //    {
-    //        if (tileName.Contains(data.TileNameContains) && data.OverlaySprite != null)
-    //        {
-    //            TreeOverlay overlay = tile.AddComponent<TreeOverlay>();
-    //            overlay.OverlaySprite = data.OverlaySprite;
-    //            overlay.UseYForSorting = true;
-    //            overlay.BaseOverlayOrder = 100;
-    //            return;
-    //        }
-    //    }
-    //}
-
-    // В TryAddOverlay добавь вычисление базовой Y:
 
     void TryAddOverlay(GameObject tile, string tileName, float tileY)
     {
@@ -465,27 +430,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
                 return;
             }
         }
-    }
-
-    float CalculateTreeBaseY(string tileName, float currentY)
-    {
-        // Части 1-2 = перед (ближе к камере) - это ОСНОВАНИЕ для сортировки
-        // Части 3-4 = выше на 1
-        // Части 5-6 = выше на 2
-        // Части 7-8 = верх (самые дальние)
-
-        // Нам нужно вычислить Y частей 1-2 (основания) для ВСЕХ частей
-
-        if (tileName.Contains("poplarPart1") || tileName.Contains("poplarPart2"))
-            return currentY;  // Это и есть основание
-        if (tileName.Contains("poplarPart3") || tileName.Contains("poplarPart4"))
-            return currentY - TileSize;  // На 1 тайл ниже = Y основания
-        if (tileName.Contains("poplarPart5") || tileName.Contains("poplarPart6"))
-            return currentY - TileSize * 2;  // На 2 тайла ниже
-        if (tileName.Contains("poplarPart7") || tileName.Contains("poplarPart8"))
-            return currentY - TileSize * 3;  // На 3 тайла ниже
-
-        return currentY;
     }
     void ClearMap()
     {
