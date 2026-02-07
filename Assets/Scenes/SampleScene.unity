@@ -392,6 +392,7 @@ MonoBehaviour:
   Rb: {fileID: 852425544}
   SpriteRenderer: {fileID: 852425545}
   BaseSortingOrder: 10000
+  FeetOffsetY: -0.7
 --- !u!61 &852425543
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -426,17 +427,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.82771456}
+  m_Offset: {x: 0, y: 0.14013481}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
+    pivot: {x: 0.5, y: 0}
     oldSize: {x: 0.875, y: 2}
     newSize: {x: 0.875, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.875, y: 0.34457088}
+  m_Size: {x: 0.875, y: 0.36473465}
   m_EdgeRadius: 0
 --- !u!50 &852425544
 Rigidbody2D:

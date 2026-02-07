@@ -11,7 +11,10 @@ public class PlayerController : MonoBehaviour
     public SpriteRenderer SpriteRenderer;
 
     [Header("Сортировка")]
-    public int BaseSortingOrder = 10000;  // ? ИЗМЕНЕНО: было 100, стало 1000
+    public int BaseSortingOrder = 10000;
+
+    [Header("Смещение для сортировки (к ногам)")]
+    public float FeetOffsetY = -0.5f;  // Сколько вниз от центра до ног
 
     private Vector2 moveInput;
 
@@ -42,9 +45,15 @@ public class PlayerController : MonoBehaviour
         Rb.linearVelocity = moveInput * MoveSpeed;
     }
 
+    //void LateUpdate()
+    //{
+    //    // Сортируем по НОГАМ персонажа!
+    //    float feetY = transform.position.y + FeetOffsetY;
+    //    SpriteRenderer.sortingOrder = BaseSortingOrder - Mathf.RoundToInt(feetY * 10);
+    //}
     void LateUpdate()
     {
-        // Теперь order будет: 1000 - 126 = 874 (положительный!)
+        // Pivot у ног — всё просто!
         SpriteRenderer.sortingOrder = BaseSortingOrder - Mathf.RoundToInt(transform.position.y * 10);
     }
 }
