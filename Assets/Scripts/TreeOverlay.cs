@@ -10,11 +10,10 @@ public class TreeOverlay : MonoBehaviour
     public int BaseOverlayOrder = 10000;
 
     [Header("Настройки")]
-    public bool UseYForSorting = true;
     public float TreeBaseY = 0f;
 
-    [Header("Смещение спрайта (подстрой под свой спрайт!)")]
-    public Vector2 SpriteOffset = new Vector2(0f, 2f);
+    [Header("Pixels Per Unit")]
+    public float PixelsPerUnit = 32f;
 
     private SpriteRenderer overlayRenderer;
 
@@ -29,7 +28,6 @@ public class TreeOverlay : MonoBehaviour
 
         GameObject overlayObj = new GameObject("TreeOverlay");
         overlayObj.transform.SetParent(transform);
-        overlayObj.transform.localPosition = new Vector3(SpriteOffset.x, SpriteOffset.y, 0);
         overlayObj.transform.localRotation = Quaternion.identity;
         overlayObj.transform.localScale = Vector3.one;
 
@@ -37,10 +35,21 @@ public class TreeOverlay : MonoBehaviour
         overlayRenderer.sprite = OverlaySprite;
         overlayRenderer.sortingLayerName = OverlaySortingLayer;
 
-        UpdateSorting();
+        Vector3 offset = CalculateOffset();
+        overlayObj.transform.localPosition = offset;
 
-        // ДЕБАГ
-        Debug.Log($"TreeOverlay создан: TreeBaseY={TreeBaseY}, Order={overlayRenderer.sortingOrder}");
+        UpdateSorting();
+    }
+
+    Vector3 CalculateOffset()
+    {
+        float tileSize = 32f / PixelsPerUnit;  // = 1 юнит
+
+        // 32 пикселя влево = -1 юнит при PPU=32
+        float offsetX = -0.5f * tileSize;  // ВЛЕВО на 1 тайл
+        float offsetY = 1.5f * tileSize; // Вверх на 1.5 тайла
+
+        return new Vector3(offsetX, offsetY, 0);
     }
 
     void UpdateSorting()

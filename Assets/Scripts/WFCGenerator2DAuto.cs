@@ -454,11 +454,13 @@ public class WFCGenerator2DAuto : MonoBehaviour
             {
                 TreeOverlay overlay = tile.AddComponent<TreeOverlay>();
                 overlay.OverlaySprite = data.OverlaySprite;
-                overlay.UseYForSorting = true;
                 overlay.BaseOverlayOrder = 10000;
                 overlay.OverlaySortingLayer = "Player";
                 overlay.TreeBaseY = tileY;
-                overlay.SpriteOffset = Vector2.zero;  // ¡≈« —Ã≈Ÿ≈Õ»ﬂ!
+                overlay.PixelsPerUnit = 32f;
+                // ”¡–¿À: overlay.UseYForSorting = true;
+                // ”¡–¿À: overlay.SpriteOffset = ...
+                // ”¡–¿À: overlay.AutoAlignToTile = ...
 
                 return;
             }
