@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8074111720817838837}
   - component: {fileID: 4600545452756417089}
   - component: {fileID: 8398656566727115808}
-  - component: {fileID: 8211425934020014041}
+  - component: {fileID: 539607854980664952}
   m_Layer: 0
   m_Name: poplarPart1_0
   m_TagString: Untagged
@@ -242,8 +242,8 @@ MonoBehaviour:
   - {r: 0.39607844, g: 0.5176471, b: 0.36078432, a: 1}
   - {r: 0.39607844, g: 0.5176471, b: 0.36078432, a: 1}
   - {r: 0.39607844, g: 0.5176471, b: 0.36078432, a: 1}
---- !u!61 &8211425934020014041
-BoxCollider2D:
+--- !u!58 &539607854980664952
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -276,15 +276,5 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.25036043, y: 0.07387684}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.49927914, y: 0.573156}
-  m_EdgeRadius: 0
+  m_Offset: {x: -0.45601892, y: 0}
+  m_Radius: 0.31070912
