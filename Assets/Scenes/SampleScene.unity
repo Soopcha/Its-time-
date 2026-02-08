@@ -882,9 +882,13 @@ MonoBehaviour:
   UsePerlinZones: 1
   MaxRetries: 20
   ShowDebugLogs: 1
-  TreeOverlays:
-  - TileNameContains: poplarPart2_0
+  Overlays:
+  - TileNameContains: poplarPart1_0
     OverlaySprite: {fileID: 3083486608591156851, guid: ba519ee1f0627f144891c7a07e8bfaa7, type: 3}
+    OffsetInTiles: {x: -0.5, y: 1.5}
+  - TileNameContains: stone_0
+    OverlaySprite: {fileID: 5322164711224347081, guid: 0b93a31455f331140abeeaa23b1655e3, type: 3}
+    OffsetInTiles: {x: -0.5, y: 1}
 --- !u!4 &1912395144
 Transform:
   m_ObjectHideFlags: 0

@@ -29,14 +29,15 @@ public class WFCGenerator2DAuto : MonoBehaviour
     private int currentRetryCount = 0;
     private int totalDeadEnds = 0;
 
-    [Header("Оверлеи для деревьев")]
-    public List<TreeOverlayData> TreeOverlays = new List<TreeOverlayData>();
+    [Header("Оверлеи для объектов")]
+    public List<OverlayData> Overlays = new List<OverlayData>();
 
     [System.Serializable]
-    public class TreeOverlayData
+    public class OverlayData
     {
-        public string TileNameContains = "poplarPart";  // Часть имени тайла
-        public Sprite OverlaySprite;                     // Прозрачный спрайт
+        public string TileNameContains = "";
+        public Sprite OverlaySprite;
+        public Vector2 OffsetInTiles = new Vector2(-0.5f, 1.5f);  // Смещение в тайлах
     }
 
     void Start()
@@ -410,19 +411,20 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
     void TryAddOverlay(GameObject tile, string tileName, float tileY)
     {
-        if (!tileName.Contains("poplarPart1_0"))
-            return;
-
-        foreach (var data in TreeOverlays)
+        foreach (var data in Overlays)
         {
-            if (data.OverlaySprite != null)
+            if (string.IsNullOrEmpty(data.TileNameContains))
+                continue;
+
+            if (tileName.Contains(data.TileNameContains) && data.OverlaySprite != null)
             {
-                TreeOverlay overlay = tile.AddComponent<TreeOverlay>();
+                SpriteOverlay overlay = tile.AddComponent<SpriteOverlay>();
                 overlay.OverlaySprite = data.OverlaySprite;
                 overlay.BaseOverlayOrder = 10000;
                 overlay.OverlaySortingLayer = "Player";
-                overlay.TreeBaseY = tileY;
+                overlay.BaseY = tileY;
                 overlay.PixelsPerUnit = 32f;
+                overlay.OffsetInTiles = data.OffsetInTiles;
 
                 return;
             }
