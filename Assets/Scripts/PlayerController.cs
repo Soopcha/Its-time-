@@ -4,8 +4,8 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [Header("Движение")]
-    public float MoveSpeed = 5f;
-    public float SneakSpeed = 2f;  // Скорость крадучись
+    public float WalkSpeed = 3f;    // Обычная ходьба
+    public float RunSpeed = 6f;     // Бег (Shift)
 
     [Header("Компоненты")]
     public Rigidbody2D Rb;
@@ -17,13 +17,17 @@ public class PlayerController : MonoBehaviour
     [Header("Здоровье")]
     public int MaxHealth = 3;
     public int CurrentHealth = 3;
-    public float InvincibilityTime = 2f;  // Неуязвимость после урона
+    public float InvincibilityTime = 2f;
 
     [Header("Укрытие")]
-    public bool IsHidden = false;  // Прячется ли в кустах
+    public bool IsHidden = false;
+
+    // Публичные свойства для EnemyAI
+    public bool IsRunning => isRunning && moveInput.magnitude > 0.1f;
+    public bool IsMoving => moveInput.magnitude > 0.1f;
 
     private Vector2 moveInput;
-    private bool isSneaking = false;
+    private bool isRunning = false;
     private float invincibilityTimer = 0f;
     private bool isInvincible = false;
 
@@ -49,8 +53,8 @@ public class PlayerController : MonoBehaviour
         if (moveInput.magnitude > 1f)
             moveInput.Normalize();
 
-        // Shift = красться
-        isSneaking = Keyboard.current.leftShiftKey.isPressed;
+        // Shift = бежать (теперь БЫСТРЕЕ!)
+        isRunning = Keyboard.current.leftShiftKey.isPressed;
 
         // Флип спрайта
         if (moveInput.x < 0)
@@ -69,7 +73,6 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                // Мигание
                 float alpha = Mathf.PingPong(Time.time * 10f, 1f) > 0.5f ? 1f : 0.3f;
                 SpriteRenderer.color = new Color(1f, 1f, 1f, alpha);
             }
@@ -78,7 +81,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        float speed = isSneaking ? SneakSpeed : MoveSpeed;
+        // Shift = быстрее, без Shift = медленнее
+        float speed = isRunning ? RunSpeed : WalkSpeed;
         Rb.linearVelocity = moveInput * speed;
     }
 
@@ -100,7 +104,6 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // Включаем неуязвимость
             isInvincible = true;
             invincibilityTimer = InvincibilityTime;
         }
@@ -109,11 +112,8 @@ public class PlayerController : MonoBehaviour
     void Die()
     {
         Debug.Log("GAME OVER!");
-        // Тут можно перезагрузить уровень или показать меню
-        // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    // Вход/выход из укрытия
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("HidingSpot"))

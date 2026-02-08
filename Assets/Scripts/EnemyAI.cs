@@ -35,6 +35,9 @@ public class EnemyAI : MonoBehaviour
     public SpriteRenderer SpriteRenderer;
     public Rigidbody2D Rb;
 
+    [Header("Слух")]
+    public float HearingDistance = 4f;  // Бегущего слышно на 4 юнита
+
     // Приватные переменные
     private int currentPatrolIndex = 0;
     private float waitTimer = 0f;
@@ -208,45 +211,49 @@ public class EnemyAI : MonoBehaviour
                 return false;
         }
 
-        // Игрок в укрытии?
         PlayerController playerController = Player.GetComponent<PlayerController>();
+
+        // В укрытии — не видим и не слышим
         if (playerController != null && playerController.IsHidden)
             return false;
 
         Vector2 directionToPlayer = Player.position - transform.position;
         float distanceToPlayer = directionToPlayer.magnitude;
 
-        // Проверка дистанции
+        // ========== СЛУХ: Бегущего слышно вокруг! ==========
+        if (playerController != null && playerController.IsRunning)
+        {
+            if (distanceToPlayer <= HearingDistance)
+            {
+                return true;  // Слышу бегущего — даже сзади!
+            }
+        }
+
+        // ========== ЗРЕНИЕ: Только спереди ==========
         if (distanceToPlayer > ViewDistance)
             return false;
 
-        // Проверка угла
         float angle = Vector2.Angle(GetFacingDirection(), directionToPlayer);
         if (angle > ViewAngle / 2f)
             return false;
 
-        // Проверка препятствий — ИГНОРИРУЕМ СЕБЯ!
+        // Проверка препятствий
         RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, directionToPlayer.normalized, distanceToPlayer);
 
         foreach (var hit in hits)
         {
-            // Пропускаем СЕБЯ
             if (hit.collider.gameObject == gameObject)
                 continue;
 
-            // Пропускаем триггеры (кусты, зоны и т.д.)
             if (hit.collider.isTrigger)
                 continue;
 
-            // Если это игрок — видим!
             if (hit.collider.CompareTag("Player"))
                 return true;
 
-            // Что-то другое мешает (стена)
             return false;
         }
 
-        // Ничего не мешает — видим игрока!
         return true;
     }
 
