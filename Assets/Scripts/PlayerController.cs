@@ -4,12 +4,13 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [Header("Движение")]
-    public float WalkSpeed = 3f;    // Обычная ходьба
-    public float RunSpeed = 6f;     // Бег (Shift)
+    public float WalkSpeed = 3f;
+    public float RunSpeed = 6f;
 
     [Header("Компоненты")]
     public Rigidbody2D Rb;
     public SpriteRenderer SpriteRenderer;
+    public Animator Animator;  // ? НОВОЕ!
 
     [Header("Сортировка")]
     public int BaseSortingOrder = 10000;
@@ -27,6 +28,7 @@ public class PlayerController : MonoBehaviour
     public bool IsMoving => moveInput.magnitude > 0.1f;
 
     private Vector2 moveInput;
+    private Vector2 lastMoveDirection = Vector2.down;  // ? НОВОЕ!
     private bool isRunning = false;
     private float invincibilityTimer = 0f;
     private bool isInvincible = false;
@@ -34,6 +36,9 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         CurrentHealth = MaxHealth;
+
+        if (Animator == null)
+            Animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -53,14 +58,17 @@ public class PlayerController : MonoBehaviour
         if (moveInput.magnitude > 1f)
             moveInput.Normalize();
 
-        // Shift = бежать (теперь БЫСТРЕЕ!)
+        // Запоминаем последнее направление
+        if (moveInput.magnitude > 0.1f)
+            lastMoveDirection = moveInput;
+
+        // Shift = бежать
         isRunning = Keyboard.current.leftShiftKey.isPressed;
 
-        // Флип спрайта
-        if (moveInput.x < 0)
-            SpriteRenderer.flipX = true;
-        else if (moveInput.x > 0)
-            SpriteRenderer.flipX = false;
+        // УБРАЛИ flipX — теперь анимации сами переключают спрайт!
+
+        // Анимация
+        UpdateAnimation();
 
         // Таймер неуязвимости
         if (isInvincible)
@@ -79,9 +87,30 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void UpdateAnimation()
+    {
+        if (Animator == null) return;
+
+        bool isMoving = moveInput.magnitude > 0.1f;
+
+        Animator.SetBool("IsMoving", isMoving);
+
+        if (isMoving)
+        {
+            // Передаём направление движения
+            Animator.SetFloat("MoveX", moveInput.x);
+            Animator.SetFloat("MoveY", moveInput.y);
+        }
+        else
+        {
+            // Передаём последнее направление
+            Animator.SetFloat("MoveX", lastMoveDirection.x);
+            Animator.SetFloat("MoveY", lastMoveDirection.y);
+        }
+    }
+
     void FixedUpdate()
     {
-        // Shift = быстрее, без Shift = медленнее
         float speed = isRunning ? RunSpeed : WalkSpeed;
         Rb.linearVelocity = moveInput * speed;
     }

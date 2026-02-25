@@ -455,6 +455,7 @@ MonoBehaviour:
   RunSpeed: 6
   Rb: {fileID: 852425544}
   SpriteRenderer: {fileID: 852425545}
+  Animator: {fileID: 852425547}
   BaseSortingOrder: 10000
   MaxHealth: 3
   CurrentHealth: 3
