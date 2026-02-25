@@ -431,6 +431,7 @@ GameObject:
   - component: {fileID: 852425544}
   - component: {fileID: 852425543}
   - component: {fileID: 852425542}
+  - component: {fileID: 852425547}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -454,6 +455,7 @@ MonoBehaviour:
   RunSpeed: 6
   Rb: {fileID: 852425544}
   SpriteRenderer: {fileID: 852425545}
+  Animator: {fileID: 852425547}
   BaseSortingOrder: 10000
   MaxHealth: 3
   CurrentHealth: 3
@@ -493,7 +495,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.14013481}
+  m_Offset: {x: 0.028197289, y: 0.14013481}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -503,7 +505,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.875, y: 0.36473465}
+  m_Size: {x: 0.7152157, y: 0.36473465}
   m_EdgeRadius: 0
 --- !u!50 &852425544
 Rigidbody2D:
@@ -606,6 +608,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &852425547
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 852425541}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ab261d72c59c3d144b6ccfd9b053727e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &999593394
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,7 +912,7 @@ MonoBehaviour:
     OffsetInTiles: {x: -0.5, y: 1.5}
   - TileNameContains: stone_0
     OverlaySprite: {fileID: 5322164711224347081, guid: 0b93a31455f331140abeeaa23b1655e3, type: 3}
-    OffsetInTiles: {x: -0.5, y: 1}
+    OffsetInTiles: {x: 0, y: 0}
 --- !u!4 &1912395144
 Transform:
   m_ObjectHideFlags: 0
