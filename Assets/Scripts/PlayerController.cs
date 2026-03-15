@@ -43,6 +43,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+
+        // Блокировка при диалоге
+        if (DialogueManager.Instance != null && DialogueManager.Instance.IsActive)
+        {
+            moveInput = Vector2.zero;
+            if (Animator != null) Animator.SetBool("IsMoving", false);
+            return;
+        }
+
         // Читаем ввод
         moveInput = Vector2.zero;
 
@@ -111,6 +120,12 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (DialogueManager.Instance != null && DialogueManager.Instance.IsActive)
+        {
+            Rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         float speed = isRunning ? RunSpeed : WalkSpeed;
         Rb.linearVelocity = moveInput * speed;
     }
