@@ -1,21 +1,20 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PetrsHouse : MonoBehaviour
 {
     private bool playerInRange;
 
-    [Header("Настройки")]
-    public string houseSceneName = "PetrsHouseIn"; // Или используйте переход без сцены
-
     void Update()
     {
-        if (!playerInRange) return;
-        if (DialogueManager.Instance != null && DialogueManager.Instance.IsActive) return;
-
-        if (Keyboard.current.eKey.wasPressedThisFrame)
+        if (DialogueManager.Instance != null && DialogueManager.Instance.IsActive)
         {
-            TryEnterHouse();
+            InteractButtonManager.Instance?.HideButton();
+            return;
+        }
+
+        if (playerInRange)
+        {
+            InteractButtonManager.Instance?.ShowButton("Войти в дом", TryEnterHouse);
         }
     }
 
@@ -37,36 +36,31 @@ public class PetrsHouse : MonoBehaviour
         var data = new DialogueData();
         var node = data.AddNode();
         node.Lines.Add(new DialogueLine("", "Дверь заперта."));
-        node.NextNodeIndex = -1; // -1 = конец диалога
+        node.NextNodeIndex = -1;
 
         DialogueManager.Instance.StartDialogue(data);
     }
 
     void EnterHouse()
     {
-        // Переходим в интерьер дома
+        InteractButtonManager.Instance?.HideButton();
         PetrsHouseInterior.Instance?.ActivateInterior(transform.position);
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Кто-то вошёл в триггер: " + other.name + ", тег: " + other.tag);
-
         if (other.CompareTag("Player"))
         {
             playerInRange = true;
-            Debug.Log("Игрок рядом с домом!");
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        Debug.Log("Кто-то вышел из триггера: " + other.name);
-
         if (other.CompareTag("Player"))
         {
             playerInRange = false;
-            Debug.Log("Игрок ушёл от дома");
+            InteractButtonManager.Instance?.HideButton();
         }
     }
 }

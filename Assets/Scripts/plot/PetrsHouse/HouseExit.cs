@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class HouseExit : MonoBehaviour
 {
@@ -7,23 +6,32 @@ public class HouseExit : MonoBehaviour
 
     void Update()
     {
-        if (!playerInRange) return;
-
-        if (Keyboard.current.eKey.wasPressedThisFrame)
+        if (playerInRange)
         {
-            PetrsHouseInterior.Instance?.ExitInterior();
+            InteractButtonManager.Instance?.ShowButton("Выйти из дома", ExitHouse);
         }
+    }
+
+    void ExitHouse()
+    {
+        InteractButtonManager.Instance?.HideButton();
+        PetrsHouseInterior.Instance?.ExitInterior();
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInRange = true;
+        }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInRange = false;
+            InteractButtonManager.Instance?.HideButton();
+        }
     }
 }

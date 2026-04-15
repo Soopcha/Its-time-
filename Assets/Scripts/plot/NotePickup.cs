@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class NotePickup : MonoBehaviour
 {
@@ -7,12 +6,15 @@ public class NotePickup : MonoBehaviour
 
     void Update()
     {
-        if (!playerInRange) return;
-        if (DialogueManager.Instance != null && DialogueManager.Instance.IsActive) return;
-
-        if (Keyboard.current.eKey.wasPressedThisFrame)
+        if (DialogueManager.Instance != null && DialogueManager.Instance.IsActive)
         {
-            PickupNote();
+            InteractButtonManager.Instance?.HideButton();
+            return;
+        }
+
+        if (playerInRange)
+        {
+            InteractButtonManager.Instance?.ShowButton("Прочитать записку", PickupNote);
         }
     }
 
@@ -33,12 +35,15 @@ public class NotePickup : MonoBehaviour
         node1.Lines.Add(new DialogueLine("---", "А.. что тут рядом в земле?"));
         node1.Lines.Add(new DialogueLine("---", "Ключ?"));
         node1.Lines.Add(new DialogueLine("---", "*взяла ключ*"));
+        node1.NextNodeIndex = -1;
 
         DialogueManager.Instance.StartDialogue(data, onEnd: () =>
         {
             GameState.Instance.HasReadNote = true;
             GameState.Instance.HasKey = true;
             Debug.Log("Записка прочитана! Ключ получен!");
+
+            InteractButtonManager.Instance?.HideButton();
             Destroy(gameObject);
         });
     }
@@ -46,12 +51,17 @@ public class NotePickup : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInRange = true;
+        }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInRange = false;
+            InteractButtonManager.Instance?.HideButton();
+        }
     }
 }

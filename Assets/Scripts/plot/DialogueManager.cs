@@ -99,6 +99,8 @@ public class DialogueManager : MonoBehaviour
     public void StartDialogue(DialogueData data, Action onEnd = null,
                                Action<string> onAction = null)
     {
+
+        InteractButtonManager.Instance?.HideButton();
         currentData = data;
         currentNodeIndex = 0;
         currentLineIndex = 0;
