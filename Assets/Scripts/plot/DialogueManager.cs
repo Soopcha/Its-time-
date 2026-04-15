@@ -41,6 +41,23 @@ public class DialogueManager : MonoBehaviour
         ChoicePanel.SetActive(false);
     }
 
+    //void Update()
+    //{
+    //    if (!isActive) return;
+
+    //    if (justStarted)
+    //    {
+    //        justStarted = false;
+    //        return;
+    //    }
+
+    //    if (waitingForChoice) return;
+
+    //    if (Keyboard.current.eKey.wasPressedThisFrame)
+    //    {
+    //        Advance();
+    //    }
+    //}
     void Update()
     {
         if (!isActive) return;
@@ -53,7 +70,27 @@ public class DialogueManager : MonoBehaviour
 
         if (waitingForChoice) return;
 
-        if (Keyboard.current.eKey.wasPressedThisFrame)
+        //  À¿¬»¿“”–¿ 
+        bool advanceInput = false;
+
+        if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            advanceInput = true;
+        }
+
+        //  ¿—¿Õ»ﬂ 
+        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
+        {
+            advanceInput = true;
+        }
+
+        // Ã€ÿ‹ 
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            advanceInput = true;
+        }
+
+        if (advanceInput)
         {
             Advance();
         }

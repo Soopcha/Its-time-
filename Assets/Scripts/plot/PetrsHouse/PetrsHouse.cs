@@ -37,6 +37,7 @@ public class PetrsHouse : MonoBehaviour
         var data = new DialogueData();
         var node = data.AddNode();
         node.Lines.Add(new DialogueLine("", "Дверь заперта."));
+        node.NextNodeIndex = -1; // -1 = конец диалога
 
         DialogueManager.Instance.StartDialogue(data);
     }
