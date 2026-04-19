@@ -14,6 +14,7 @@ public class DialogueManager : MonoBehaviour
     public TMP_Text SpeakerText;
     public TMP_Text DialogueText;
     public TMP_Text HintText;
+    public Image PortraitImage; // ? НОВОЕ!
 
     [Header("Выбор")]
     public GameObject ChoicePanel;
@@ -21,6 +22,10 @@ public class DialogueManager : MonoBehaviour
     public Button Choice2Button;
     public TMP_Text Choice1Text;
     public TMP_Text Choice2Text;
+
+    [Header("Портреты персонажей")] // ? НОВОЕ!
+    public Sprite PlayerPortrait;
+    public Sprite PetrPortrait;
 
     private DialogueData currentData;
     private int currentNodeIndex;
@@ -39,25 +44,11 @@ public class DialogueManager : MonoBehaviour
         Instance = this;
         DialoguePanel.SetActive(false);
         ChoicePanel.SetActive(false);
+
+        if (PortraitImage != null)
+            PortraitImage.gameObject.SetActive(false);
     }
 
-    //void Update()
-    //{
-    //    if (!isActive) return;
-
-    //    if (justStarted)
-    //    {
-    //        justStarted = false;
-    //        return;
-    //    }
-
-    //    if (waitingForChoice) return;
-
-    //    if (Keyboard.current.eKey.wasPressedThisFrame)
-    //    {
-    //        Advance();
-    //    }
-    //}
     void Update()
     {
         if (!isActive) return;
@@ -70,7 +61,6 @@ public class DialogueManager : MonoBehaviour
 
         if (waitingForChoice) return;
 
-        // КЛАВИАТУРА 
         bool advanceInput = false;
 
         if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
@@ -78,13 +68,11 @@ public class DialogueManager : MonoBehaviour
             advanceInput = true;
         }
 
-        // КАСАНИЯ 
         if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
         {
             advanceInput = true;
         }
 
-        // МЫШЬ 
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             advanceInput = true;
@@ -99,7 +87,6 @@ public class DialogueManager : MonoBehaviour
     public void StartDialogue(DialogueData data, Action onEnd = null,
                                Action<string> onAction = null)
     {
-
         InteractButtonManager.Instance?.HideButton();
         MobileInputManager.Instance?.HideControls();
         currentData = data;
@@ -151,8 +138,55 @@ public class DialogueManager : MonoBehaviour
         SpeakerText.text = line.Speaker;
         DialogueText.text = line.Text;
 
+        // ===== НОВОЕ: Показываем портрет =====
+        ShowPortrait(line);
+
         if (HintText != null)
             HintText.text = "Нажмите, чтобы продолжить";
+    }
+
+    // ===== НОВЫЙ МЕТОД: Показ портрета =====
+    void ShowPortrait(DialogueLine line)
+    {
+        if (PortraitImage == null) return;
+
+        Sprite portrait = null;
+
+        // Если в DialogueLine уже указан портрет — используем его
+        if (line.Portrait != null)
+        {
+            portrait = line.Portrait;
+        }
+        else
+        {
+            // Иначе определяем по имени говорящего
+            portrait = GetPortraitBySpeaker(line.Speaker);
+        }
+
+        if (portrait != null)
+        {
+            PortraitImage.sprite = portrait;
+            PortraitImage.gameObject.SetActive(true);
+        }
+        else
+        {
+            PortraitImage.gameObject.SetActive(false);
+        }
+    }
+
+    // ===== НОВЫЙ МЕТОД: Получить портрет по имени =====
+    Sprite GetPortraitBySpeaker(string speaker)
+    {
+        // Игрок
+        if (speaker == "---")
+            return PlayerPortrait;
+
+        // Петр
+        if (speaker.Contains("странный мужик") || speaker.Contains("Петр"))
+            return PetrPortrait;
+
+        // Для записок/системных сообщений — нет портрета
+        return null;
     }
 
     void Advance()
@@ -217,6 +251,10 @@ public class DialogueManager : MonoBehaviour
         isActive = false;
         DialoguePanel.SetActive(false);
         ChoicePanel.SetActive(false);
+
+        if (PortraitImage != null)
+            PortraitImage.gameObject.SetActive(false);
+
         MobileInputManager.Instance?.ShowControls();
         onEnd?.Invoke();
     }

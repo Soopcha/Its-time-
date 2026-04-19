@@ -1,15 +1,18 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class DialogueLine
 {
     public string Speaker;
     public string Text;
+    public Sprite Portrait; // ? мнбне!
 
-    public DialogueLine(string speaker, string text)
+    public DialogueLine(string speaker, string text, Sprite portrait = null)
     {
         Speaker = speaker;
         Text = text;
+        Portrait = portrait;
     }
 }
 
