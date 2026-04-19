@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // ===== НОВЫЙ КОД: Читаем ввод =====
+        // ===== Читаем ввод =====
         moveInput = Vector2.zero;
 
         // Клавиатура (ПК)
@@ -84,8 +84,20 @@ public class PlayerController : MonoBehaviour
         if (moveInput.magnitude > 0.1f)
             lastMoveDirection = moveInput;
 
-        // Shift = бежать (только на ПК)
-        isRunning = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
+        // ===== БЕГ: Shift (ПК) ИЛИ двойное нажатие (мобилка) =====
+        isRunning = false;
+
+        // ПК: Shift
+        if (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed)
+        {
+            isRunning = true;
+        }
+
+        // Мобилка: двойное нажатие
+        if (MobileInputManager.Instance != null && MobileInputManager.Instance.IsRunning())
+        {
+            isRunning = true;
+        }
 
         // Анимация
         UpdateAnimation();

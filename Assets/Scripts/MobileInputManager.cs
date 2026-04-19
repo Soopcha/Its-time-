@@ -54,6 +54,22 @@ public class MobileInputManager : MonoBehaviour
         return input;
     }
 
+    // НОВЫЙ МЕТОД: Проверка бега через двойное нажатие
+    public bool IsRunning()
+    {
+        // Бег активен если ЛЮБАЯ кнопка в режиме двойного нажатия
+        if (UpButton != null && UpButton.IsDoubleTapRunning)
+            return true;
+        if (DownButton != null && DownButton.IsDoubleTapRunning)
+            return true;
+        if (LeftButton != null && LeftButton.IsDoubleTapRunning)
+            return true;
+        if (RightButton != null && RightButton.IsDoubleTapRunning)
+            return true;
+
+        return false;
+    }
+
     public void ShowControls()
     {
         if (MobileControlsRoot != null)
