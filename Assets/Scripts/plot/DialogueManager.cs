@@ -101,6 +101,7 @@ public class DialogueManager : MonoBehaviour
     {
 
         InteractButtonManager.Instance?.HideButton();
+        MobileInputManager.Instance?.HideControls();
         currentData = data;
         currentNodeIndex = 0;
         currentLineIndex = 0;
@@ -216,6 +217,7 @@ public class DialogueManager : MonoBehaviour
         isActive = false;
         DialoguePanel.SetActive(false);
         ChoicePanel.SetActive(false);
+        MobileInputManager.Instance?.ShowControls();
         onEnd?.Invoke();
     }
 }

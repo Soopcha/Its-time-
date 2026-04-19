@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     [Header("Компоненты")]
     public Rigidbody2D Rb;
     public SpriteRenderer SpriteRenderer;
-    public Animator Animator;  // ? НОВОЕ!
+    public Animator Animator;  
 
     [Header("Сортировка")]
     public int BaseSortingOrder = 10000;
@@ -43,7 +43,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
         // Блокировка при диалоге
         if (DialogueManager.Instance != null && DialogueManager.Instance.IsActive)
         {
@@ -52,17 +51,31 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // Читаем ввод
+        // ===== НОВЫЙ КОД: Читаем ввод =====
         moveInput = Vector2.zero;
 
-        if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
-            moveInput.y = 1;
-        if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
-            moveInput.y = -1;
-        if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
-            moveInput.x = -1;
-        if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
-            moveInput.x = 1;
+        // Клавиатура (ПК)
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
+                moveInput.y = 1;
+            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
+                moveInput.y = -1;
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+                moveInput.x = -1;
+            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+                moveInput.x = 1;
+        }
+
+        // Мобильные кнопки (если есть)
+        if (MobileInputManager.Instance != null)
+        {
+            Vector2 mobileInput = MobileInputManager.Instance.GetMoveInput();
+            if (mobileInput.magnitude > 0.1f)
+            {
+                moveInput = mobileInput;
+            }
+        }
 
         if (moveInput.magnitude > 1f)
             moveInput.Normalize();
@@ -71,10 +84,8 @@ public class PlayerController : MonoBehaviour
         if (moveInput.magnitude > 0.1f)
             lastMoveDirection = moveInput;
 
-        // Shift = бежать
-        isRunning = Keyboard.current.leftShiftKey.isPressed;
-
-        // УБРАЛИ flipX — теперь анимации сами переключают спрайт!
+        // Shift = бежать (только на ПК)
+        isRunning = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
 
         // Анимация
         UpdateAnimation();
