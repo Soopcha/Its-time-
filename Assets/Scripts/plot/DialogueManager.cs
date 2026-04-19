@@ -151,7 +151,7 @@ public class DialogueManager : MonoBehaviour
         DialogueText.text = line.Text;
 
         if (HintText != null)
-            HintText.text = "[E]";
+            HintText.text = "Нажмите, чтобы продолжить";
     }
 
     void Advance()
