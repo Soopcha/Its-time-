@@ -43,6 +43,18 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
     void Start()
     {
+        //// Запускаем музыку игры
+        //if (AudioManager.Instance != null)
+        //{
+        //    AudioManager.Instance.PlayGameMusic();
+        //}
+
+        // Останавливаем музыку в игре
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+        }
+
         foreach (var tile in TilePrefabs)
         {
             tile.CalculateEdges();

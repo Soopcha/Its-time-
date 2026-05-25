@@ -49,6 +49,11 @@ public class MenuManager : MonoBehaviour
                             "Версия: 0.1 Alpha\n\n" +
                             "Unity 2D | WFC + Perlin Noise";
         }
+        // Запускаем музыку меню
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMenuMusic();
+        }
     }
 
     void ShowMainMenu()
