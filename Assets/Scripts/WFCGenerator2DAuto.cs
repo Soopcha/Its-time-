@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -47,7 +48,32 @@ public class WFCGenerator2DAuto : MonoBehaviour
             tile.CalculateEdges();
         }
 
+        // НОВОЕ: Показываем загрузку и генерируем карту
+        if (LoadingScreen.Instance != null)
+        {
+            LoadingScreen.Instance.Show("Генерация мира...");
+        }
+
+        StartCoroutine(GenerateAfterFrame());
+    }
+
+    // НОВЫЙ МЕТОД
+    IEnumerator GenerateAfterFrame()
+    {
+        // Ждём 1 кадр чтобы UI загрузки отобразился
+        yield return null;
+
+        // Генерируем карту
         GenerateWithRetry();
+
+        // Ждём ещё 1 кадр
+        yield return null;
+
+        // Прячем загрузку
+        if (LoadingScreen.Instance != null)
+        {
+            LoadingScreen.Instance.Hide();
+        }
     }
 
     void Update()
@@ -60,7 +86,7 @@ public class WFCGenerator2DAuto : MonoBehaviour
     }
 
     // НОВЫЙ МЕТОД: Генерация с повторными попытками
-    void GenerateWithRetry()
+    public void GenerateWithRetry()
     {
         currentRetryCount = 0;
         totalDeadEnds = 0;
