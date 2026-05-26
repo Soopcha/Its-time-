@@ -185,7 +185,7 @@ public class MenuManager : MonoBehaviour
         PlayerPrefs.SetInt("LoadSlotIndex", slotIndex);
         PlayerPrefs.Save();
 
-        Debug.Log($"?? Загрузка слота {slotIndex}: генерация отключена");
+        Debug.Log($" Загрузка слота {slotIndex}: генерация отключена");
 
         //  Загружаем данные
         SaveManager.Instance.LoadGame(slotIndex);

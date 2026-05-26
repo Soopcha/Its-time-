@@ -9,9 +9,19 @@ public class HouseSpawner : MonoBehaviour
     public WFCGenerator2DAuto Generator;
     public int MaxAttempts = 50;
 
+    [Header("Не спавнить если загрузка")]
+    public bool SpawnOnlyOnNewGame = true;
+
     void Start()
     {
-        // Подождём пока карта сгенерируется
+        bool shouldGenerate = PlayerPrefs.GetInt("ShouldGenerate", 1) == 1;
+
+        if (SpawnOnlyOnNewGame && !shouldGenerate)
+        {
+            Debug.Log("Дом НЕ спавнится - идёт загрузка из сохранения");
+            return;
+        }
+
         Invoke(nameof(SpawnHouse), 0.5f);
     }
 
@@ -31,11 +41,18 @@ public class HouseSpawner : MonoBehaviour
             int x = Random.Range(0, mapSize.x);
             int y = Random.Range(0, mapSize.y);
 
-            // Проверяем что это лес
             if (IsForestTile(x, y))
             {
                 Vector3 position = new Vector3(x * tileSize, y * tileSize, 0);
-                Instantiate(PetrsHousePrefab, position, Quaternion.identity);
+                GameObject house = Instantiate(PetrsHousePrefab, position, Quaternion.identity);
+
+                SaveableObject saveable = house.GetComponent<SaveableObject>();
+                if (saveable == null)
+                {
+                    saveable = house.AddComponent<SaveableObject>();
+                }
+                saveable.SavePosition = true;
+                saveable.SaveActiveState = true;
 
                 Debug.Log($"Дом Петра заспавнен в ({x}, {y})");
                 return;

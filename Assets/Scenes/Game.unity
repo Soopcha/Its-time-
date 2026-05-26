@@ -2694,7 +2694,7 @@ GameObject:
   - component: {fileID: 812924378}
   m_Layer: 0
   m_Name: Note1
-  m_TagString: Untagged
+  m_TagString: Note
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2844,7 +2844,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveableObject
   ObjectID: f272a2e7-51f4-4cd5-bf0a-9c15ecd01b3f
-  SavePosition: 1
+  SavePosition: 0
   SaveActiveState: 1
 --- !u!114 &812924379
 MonoBehaviour:
@@ -4184,6 +4184,7 @@ MonoBehaviour:
   PetrsHousePrefab: {fileID: 9087151704379697456, guid: 37e4283db1098d746b3d480346149abe, type: 3}
   Generator: {fileID: 1912395143}
   MaxAttempts: 50
+  SpawnOnlyOnNewGame: 1
 --- !u!4 &1211045449
 Transform:
   m_ObjectHideFlags: 0

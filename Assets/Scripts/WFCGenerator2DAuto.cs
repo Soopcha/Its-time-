@@ -46,11 +46,10 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
     void Start()
     {
-        //  Читаем флаг
         ShouldGenerate = PlayerPrefs.GetInt("ShouldGenerate", 1) == 1;
-        PlayerPrefs.DeleteKey("ShouldGenerate"); // Сбрасываем после чтения
+        PlayerPrefs.DeleteKey("ShouldGenerate");
 
-        Debug.Log($" WFCGenerator.Start(): ShouldGenerate = {ShouldGenerate}");
+        Debug.Log($"WFCGenerator.Start(): ShouldGenerate = {ShouldGenerate}");
 
         if (AudioManager.Instance != null)
         {
@@ -62,14 +61,19 @@ public class WFCGenerator2DAuto : MonoBehaviour
             tile.CalculateEdges();
         }
 
-        // Проверяем нужно ли генерировать
         if (!ShouldGenerate)
         {
-            Debug.Log(" Карта загружена из сохранения — генерация пропущена");
+            Debug.Log("Карта загружена из сохранения - генерация пропущена");
+
+            // НОВОЕ: Прячем LoadingScreen при загрузке
+            if (LoadingScreen.Instance != null)
+            {
+                LoadingScreen.Instance.Hide();
+            }
+
             return;
         }
 
-        // Генерируем только если флаг == true
         if (LoadingScreen.Instance != null)
         {
             LoadingScreen.Instance.Show("Генерация мира...");

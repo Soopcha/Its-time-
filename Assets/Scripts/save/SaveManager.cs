@@ -165,10 +165,16 @@ public class SaveManager : MonoBehaviour
             ));
         }
 
-        SaveableObject[] saveableObjects = FindObjectsOfType<SaveableObject>();
+        SaveableObject[] saveableObjects = FindObjectsOfType<SaveableObject>(true);
+        Debug.Log($"Найдено SaveableObject на сцене: {saveableObjects.Length}");
+
         foreach (var obj in saveableObjects)
         {
-            data.SaveableObjects.Add(obj.GetSaveData());
+            SaveableObjectData objData = obj.GetSaveData();
+            data.SaveableObjects.Add(objData);
+
+            // НОВОЕ: Логируем каждый объект
+            Debug.Log($"Сохраняем: {obj.name}, ID={objData.ObjectID}, Active={objData.IsActive}, Pos={objData.Position}");
         }
 
         Debug.Log($"Сохранено объектов: {data.SaveableObjects.Count}");
@@ -245,6 +251,13 @@ public class SaveManager : MonoBehaviour
             Debug.LogWarning("WFCGenerator не найден!");
         }
 
+        StartCoroutine(RestoreObjectsAfterDelay(data));
+    }
+
+    IEnumerator RestoreObjectsAfterDelay(SaveData data)
+    {
+        yield return new WaitForSeconds(0.1f);
+
         Debug.Log($"Применяем состояние {data.SaveableObjects.Count} объектов...");
 
         SaveableObject[] currentObjects = FindObjectsOfType<SaveableObject>(true);
@@ -256,13 +269,15 @@ public class SaveManager : MonoBehaviour
             if (obj != null)
             {
                 obj.LoadData(objData);
-                Debug.Log($"Объект {objData.ObjectID}: активен={objData.IsActive}");
+                Debug.Log($"Объект {obj.name}: активен={objData.IsActive}");
             }
             else
             {
-                Debug.LogWarning($"Объект {objData.ObjectID} не найден!");
+                Debug.LogWarning($"Объект с ID {objData.ObjectID} не найден - возможно уже удалён");
             }
         }
+
+        Debug.Log($"Применяем состояние {data.NPCs.Count} NPC...");
 
         SaveableNPC[] currentNPCs = FindObjectsOfType<SaveableNPC>(true);
         foreach (var npcData in data.NPCs)
@@ -272,7 +287,11 @@ public class SaveManager : MonoBehaviour
             if (npc != null)
             {
                 npc.LoadData(npcData);
-                Debug.Log($"NPC {npcData.ObjectID} загружен");
+                Debug.Log($"NPC {npc.name} загружен");
+            }
+            else
+            {
+                Debug.LogWarning($"NPC с ID {npcData.ObjectID} не найден");
             }
         }
 
