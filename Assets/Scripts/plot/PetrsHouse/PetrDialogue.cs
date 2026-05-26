@@ -2,8 +2,23 @@ using UnityEngine;
 
 public class PetrDialogue : MonoBehaviour
 {
+
+    private SaveableNPC saveableNPC;
+
+    void Awake()
+    {
+        saveableNPC = GetComponent<SaveableNPC>();
+    }
+
     public void StartInitialDialogue()
     {
+        // Проверяем разговаривали ли уже
+        if (saveableNPC != null && saveableNPC.HasTalked)
+        {
+            Debug.Log("Петр уже разговаривал с игроком");
+            return;
+        }
+
         var data = new DialogueData();
 
         // Узел 0: Начало
@@ -111,6 +126,12 @@ public class PetrDialogue : MonoBehaviour
         DialogueManager.Instance.StartDialogue(data,
             onEnd: () => {
                 GameState.Instance.PetrCutsceneDone = true;
+
+                // Отмечаем что поговорили
+                if (saveableNPC != null)
+                {
+                    saveableNPC.HasTalked = true;
+                }
             },
             onAction: (action) => {
                 if (action == "BAD_END")
