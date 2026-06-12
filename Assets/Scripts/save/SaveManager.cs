@@ -185,6 +185,15 @@ public class SaveManager : MonoBehaviour
             data.NPCs.Add(npc.GetSaveData());
         }
 
+        // Дом Петра
+        GameObject house = GameObject.Find("PetrsHouse(Clone)");
+        if (house != null)
+        {
+            data.HasHouse = true;
+            data.HousePosition = house.transform.position;
+            Debug.Log($"Сохраняем дом в позиции: {data.HousePosition}");
+        }
+
         return data;
     }
 
@@ -250,6 +259,28 @@ public class SaveManager : MonoBehaviour
         {
             Debug.LogWarning("WFCGenerator не найден!");
         }
+
+        // Дом Петра
+        if (data.HasHouse)
+        {
+            HouseSpawner spawner = FindObjectOfType<HouseSpawner>();
+            if (spawner != null && spawner.PetrsHousePrefab != null)
+            {
+                GameObject house = Instantiate(spawner.PetrsHousePrefab, data.HousePosition, Quaternion.identity);
+
+                SaveableObject saveable = house.GetComponent<SaveableObject>();
+                if (saveable == null)
+                {
+                    saveable = house.AddComponent<SaveableObject>();
+                }
+                saveable.SavePosition = true;
+                saveable.SaveActiveState = true;
+
+                Debug.Log($"Дом восстановлен в позиции: {data.HousePosition}");
+            }
+        }
+
+
 
         StartCoroutine(RestoreObjectsAfterDelay(data));
     }

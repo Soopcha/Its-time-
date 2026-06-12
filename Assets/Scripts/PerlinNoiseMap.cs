@@ -28,10 +28,10 @@ public class PerlinNoiseMap : MonoBehaviour
     [System.Serializable]
     public class ZoneSegment
     {
-        public string Name;                      // Название (для удобства)
-        public ZoneType Type;                    // Тип зоны
+        public string Name;                      
+        public ZoneType Type;                    
         [Range(0f, 100f)]
-        public float EndPercent;                 // Где заканчивается эта зона (в процентах)
+        public float EndPercent;                
 
         public ZoneSegment(string name, ZoneType type, float endPercent)
         {
@@ -71,16 +71,16 @@ public class PerlinNoiseMap : MonoBehaviour
         switch (Axis)
         {
             case ZoneAxis.LeftToRight:
-                return (float)x / (width - 1);      // 0 слева, 1 справа
+                return (float)x / (width - 1);      
 
             case ZoneAxis.RightToLeft:
-                return 1f - (float)x / (width - 1); // 1 слева, 0 справа
+                return 1f - (float)x / (width - 1); 
 
             case ZoneAxis.BottomToTop:
-                return (float)y / (height - 1);     // 0 снизу, 1 сверху
+                return (float)y / (height - 1);    
 
             case ZoneAxis.TopToBottom:
-                return 1f - (float)y / (height - 1); // 1 снизу, 0 сверху
+                return 1f - (float)y / (height - 1); 
 
             default:
                 return (float)x / (width - 1);
@@ -113,7 +113,6 @@ public class PerlinNoiseMap : MonoBehaviour
         position += GetNoiseBias(x, y, width, height);
         position = Mathf.Clamp01(position);
 
-        // Переводим в проценты (0 до 100)
         float percent = position * 100f;
 
         // Ищем в какую зону попадает

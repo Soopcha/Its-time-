@@ -30,6 +30,10 @@ public class SaveData
     // Интерактивные объекты
     public List<SaveableObjectData> SaveableObjects = new List<SaveableObjectData>();
 
+    // Дом Петра
+    public bool HasHouse = false;
+    public Vector2 HousePosition;
+
 
     public List<SaveableNPCData> NPCs = new List<SaveableNPCData>();
 

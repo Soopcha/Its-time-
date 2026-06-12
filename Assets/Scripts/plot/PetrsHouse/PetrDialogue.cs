@@ -103,7 +103,7 @@ public class PetrDialogue : MonoBehaviour
             14 // Узел побега
         ));
         node13.Choices.Add(new DialogueChoice(
-            "Отойдите от двери.",
+            "Отойдите!",
             15, // Узел плохой концовки
             "BAD_END"
         ));
