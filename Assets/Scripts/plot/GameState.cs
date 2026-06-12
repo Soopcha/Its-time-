@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class GameState : MonoBehaviour
 {
@@ -9,6 +8,9 @@ public class GameState : MonoBehaviour
     public bool HasReadNote = false;
     public bool HasKey = false;
     public bool PetrCutsceneDone = false;
+
+    // Время игры
+    public float PlayTime = 0f;
 
     void Awake()
     {
@@ -20,5 +22,10 @@ public class GameState : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    void Update()
+    {
+        PlayTime += Time.deltaTime;
     }
 }

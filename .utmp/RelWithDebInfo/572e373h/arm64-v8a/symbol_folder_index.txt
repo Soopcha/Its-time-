@@ -1,0 +1,1 @@
+C:\lessons\diplom\rep\1\It's time\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\572e373h\obj\arm64-v8a

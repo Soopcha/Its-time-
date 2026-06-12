@@ -41,15 +41,16 @@ public class WFCGenerator2DAuto : MonoBehaviour
         public Vector2 OffsetInTiles = new Vector2(-0.5f, 1.5f);  // Смещение в тайлах
     }
 
+    [Header("Загрузка")]
+    public bool ShouldGenerate = true;
+
     void Start()
     {
-        //// Запускаем музыку игры
-        //if (AudioManager.Instance != null)
-        //{
-        //    AudioManager.Instance.PlayGameMusic();
-        //}
+        ShouldGenerate = PlayerPrefs.GetInt("ShouldGenerate", 1) == 1;
+        PlayerPrefs.DeleteKey("ShouldGenerate");
 
-        // Останавливаем музыку в игре
+        Debug.Log($"WFCGenerator.Start(): ShouldGenerate = {ShouldGenerate}");
+
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.StopMusic();
@@ -60,7 +61,19 @@ public class WFCGenerator2DAuto : MonoBehaviour
             tile.CalculateEdges();
         }
 
-        // НОВОЕ: Показываем загрузку и генерируем карту
+        if (!ShouldGenerate)
+        {
+            Debug.Log("Карта загружена из сохранения - генерация пропущена");
+
+            // НОВОЕ: Прячем LoadingScreen при загрузке
+            if (LoadingScreen.Instance != null)
+            {
+                LoadingScreen.Instance.Hide();
+            }
+
+            return;
+        }
+
         if (LoadingScreen.Instance != null)
         {
             LoadingScreen.Instance.Show("Генерация мира...");
@@ -468,7 +481,7 @@ public class WFCGenerator2DAuto : MonoBehaviour
             }
         }
     }
-    void ClearMap()
+    public void ClearMap()
     {
         foreach (Transform child in transform)
         {

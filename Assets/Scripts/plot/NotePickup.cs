@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(SaveableObject))] // Автоматически добавляет компонент
 public class NotePickup : MonoBehaviour
 {
     private bool playerInRange;
@@ -41,10 +42,12 @@ public class NotePickup : MonoBehaviour
         {
             GameState.Instance.HasReadNote = true;
             GameState.Instance.HasKey = true;
-            Debug.Log("Записка прочитана! Ключ получен!");
+
+            Debug.Log("ПЕРЕД ВЫКЛЮЧЕНИЕМ: " + gameObject.activeSelf);
+            gameObject.SetActive(false);
+            Debug.Log("ПОСЛЕ ВЫКЛЮЧЕНИЯ: " + gameObject.activeSelf);
 
             InteractButtonManager.Instance?.HideButton();
-            Destroy(gameObject);
         });
     }
 
