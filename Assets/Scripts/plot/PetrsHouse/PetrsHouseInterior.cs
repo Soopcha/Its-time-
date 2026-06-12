@@ -20,7 +20,6 @@ public class PetrsHouseInterior : MonoBehaviour
         if (InteriorRoot != null)
             InteriorRoot.SetActive(false);
     }
-
     public void ActivateInterior(Vector3 outsidePos)
     {
         outsidePosition = outsidePos;
@@ -37,6 +36,12 @@ public class PetrsHouseInterior : MonoBehaviour
 
         // Телепортируем игрока
         player.transform.position = PlayerSpawnPoint.position;
+
+        CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
+        if (cam != null)
+        {
+            cam.SnapToTarget();
+        }
 
         // Запускаем диалог с Петром если не был
         if (!GameState.Instance.PetrCutsceneDone)
@@ -58,6 +63,12 @@ public class PetrsHouseInterior : MonoBehaviour
         if (player != null)
         {
             player.transform.position = outsidePosition;
+        }
+
+        CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
+        if (cam != null)
+        {
+            cam.SnapToTarget();
         }
     }
 }
