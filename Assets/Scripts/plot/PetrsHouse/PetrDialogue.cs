@@ -107,7 +107,7 @@ public class PetrDialogue : MonoBehaviour
         node15.Lines.Add(new DialogueLine("---", "Ќ≈“! —“ќ…“≈!"));
         node15.Lines.Add(new DialogueLine("", "*удар прикладом*"));
         node15.Lines.Add(new DialogueLine("", "*хруст костей*"));
-        node15.Lines.Add(new DialogueLine("---", "јјјј!!!"));
+        node15.Lines.Add(new DialogueLine("---", "ја!"));
         node15.Lines.Add(new DialogueLine("", "Е"));
         node15.Lines.Add(new DialogueLine("", "*несколько мес€цев спуст€*"));
         node15.NextNodeIndex = -1;
