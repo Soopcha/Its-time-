@@ -3478,7 +3478,7 @@ MonoBehaviour:
   BusPrefab: {fileID: 9187683626296189780, guid: 90d26dc107c63c14081c7e4db936746e, type: 3}
   Generator: {fileID: 1912395143}
   MaxAttempts: 50
-  SafeZoneTiles: 4
+  SafeZoneTiles: 5
   SpawnOnlyOnNewGame: 1
 --- !u!4 &809207215
 Transform:
@@ -5490,7 +5490,7 @@ MonoBehaviour:
   PetrsHousePrefab: {fileID: 9087151704379697456, guid: 37e4283db1098d746b3d480346149abe, type: 3}
   Generator: {fileID: 1912395143}
   MaxAttempts: 50
-  SafeZoneTiles: 4
+  SafeZoneTiles: 5
   SpawnOnlyOnNewGame: 1
 --- !u!4 &1211045449
 Transform:

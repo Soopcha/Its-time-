@@ -11,7 +11,7 @@ public class BusSpawner : MonoBehaviour
 
     [Header("Безопасная зона")]
     [Tooltip("Отступ от края карты в тайлах")]
-    public int SafeZoneTiles = 3;  // Не спавнится ближе 3 тайлов к краю
+    public int SafeZoneTiles = 5;  // Не спавнится ближе 3 тайлов к краю
 
     [Header("Не спавнить если загрузка")]
     public bool SpawnOnlyOnNewGame = true;
