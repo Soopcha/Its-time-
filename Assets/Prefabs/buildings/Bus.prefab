@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3747214014681136318}
   - component: {fileID: 7485440665993813106}
   - component: {fileID: 2129620101805762913}
+  - component: {fileID: 8674582748708177590}
   m_Layer: 0
   m_Name: Bus
   m_TagString: Untagged
@@ -248,3 +249,19 @@ PolygonCollider2D:
       - {x: 1.609375, y: -1.59375}
       - {x: 2.703125, y: -1.4375}
   m_UseDelaunayMesh: 1
+--- !u!114 &8674582748708177590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9187683626296189780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 542c8d70ce410094ebfad2b81e407295, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DynamicSorting
+  BaseSortingOrder: 10000
+  SortingLayer: Player
+  YOffset: -0.5
+  UseParentPosition: 0
