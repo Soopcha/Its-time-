@@ -47,27 +47,50 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMenuMusic()
     {
-        if (MenuMusic != null && musicSource.clip != MenuMusic)
+        if (MenuMusic == null)
+        {
+            Debug.LogWarning(" MenuMusic не назначен!");
+            return;
+        }
+
+        // ИСПРАВЛЕНО: Если музыка другая ИЛИ не играет — запускаем
+        if (musicSource.clip != MenuMusic || !musicSource.isPlaying)
         {
             musicSource.clip = MenuMusic;
             musicSource.Play();
             Debug.Log(" Играет музыка меню");
         }
+        else
+        {
+            Debug.Log(" Музыка меню уже играет");
+        }
     }
 
     public void PlayGameMusic()
     {
-        if (GameMusic != null && musicSource.clip != GameMusic)
+        if (GameMusic == null)
+        {
+            Debug.LogWarning(" GameMusic не назначен!");
+            return;
+        }
+
+        // ИСПРАВЛЕНО: Если музыка другая ИЛИ не играет — запускаем
+        if (musicSource.clip != GameMusic || !musicSource.isPlaying)
         {
             musicSource.clip = GameMusic;
             musicSource.Play();
             Debug.Log(" Играет игровая музыка");
+        }
+        else
+        {
+            Debug.Log(" Игровая музыка уже играет");
         }
     }
 
     public void StopMusic()
     {
         musicSource.Stop();
+        Debug.Log(" Музыка остановлена");
     }
 
     // Воспроизведение звукового эффекта
@@ -85,7 +108,7 @@ public class AudioManager : MonoBehaviour
         volume = Mathf.Clamp01(volume);
         musicSource.volume = volume;
         PlayerPrefs.SetFloat("MusicVolume", volume);
-        Debug.Log($"Громкость музыки: {volume}");
+        Debug.Log($" Громкость музыки: {volume}");
     }
 
     // Установка громкости звуков
@@ -94,7 +117,7 @@ public class AudioManager : MonoBehaviour
         volume = Mathf.Clamp01(volume);
         sfxSource.volume = volume;
         PlayerPrefs.SetFloat("SFXVolume", volume);
-        Debug.Log($"Громкость звуков: {volume}");
+        Debug.Log($" Громкость звуков: {volume}");
     }
 
     // Получить текущую громкость музыки

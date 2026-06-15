@@ -9,6 +9,9 @@ public class PauseMenu : MonoBehaviour
     public GameObject SaveSlotsPanel;
     public GameObject SettingsPanel;
 
+    [Header("Кнопка паузы (в игре)")]
+    public Button PauseButton;  // НОВОЕ - кнопка для открытия паузы
+
     [Header("Кнопки главного меню паузы")]
     public Button ResumeButton;
     public Button SaveButton;
@@ -33,6 +36,13 @@ public class PauseMenu : MonoBehaviour
         PausePanel.SetActive(false);
         SaveSlotsPanel.SetActive(false);
         SettingsPanel.SetActive(false);
+
+        // НОВОЕ: Показываем кнопку паузы
+        if (PauseButton != null)
+        {
+            PauseButton.gameObject.SetActive(true);
+            PauseButton.onClick.AddListener(Pause);
+        }
 
         // Главное меню паузы
         ResumeButton.onClick.AddListener(Resume);
@@ -69,13 +79,17 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    void Pause()
+    public void Pause()  // Теперь public чтобы кнопка могла вызвать
     {
         isPaused = true;
         PausePanel.SetActive(true);
         SaveSlotsPanel.SetActive(false);
         SettingsPanel.SetActive(false);
         Time.timeScale = 0f;
+
+        // НОВОЕ: Скрываем кнопку паузы
+        if (PauseButton != null)
+            PauseButton.gameObject.SetActive(false);
     }
 
     void Resume()
@@ -85,6 +99,10 @@ public class PauseMenu : MonoBehaviour
         SaveSlotsPanel.SetActive(false);
         SettingsPanel.SetActive(false);
         Time.timeScale = 1f;
+
+        // НОВОЕ: Показываем кнопку паузы обратно
+        if (PauseButton != null)
+            PauseButton.gameObject.SetActive(true);
     }
 
     void ShowSaveSlots()
@@ -161,7 +179,6 @@ public class PauseMenu : MonoBehaviour
         MusicVolumeSlider.value = musicVolume;
         SFXVolumeSlider.value = sfxVolume;
 
-        // Применяем настройки
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.SetMusicVolume(musicVolume);

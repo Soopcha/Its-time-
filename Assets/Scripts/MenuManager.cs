@@ -68,7 +68,7 @@ public class MenuManager : MonoBehaviour
                             "Unity 2D | WFC + Perlin Noise";
         }
 
-        // Запускаем музыку меню
+        // ИСПРАВЛЕНО: Запускаем музыку меню
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayMenuMusic();
@@ -80,6 +80,15 @@ public class MenuManager : MonoBehaviour
         // Привязываем события настроек
         MusicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
         SFXVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+    }
+
+    // НОВОЕ: Включаем музыку при возврате в меню
+    void OnEnable()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMenuMusic();
+        }
     }
 
     void UpdateContinueButton()
