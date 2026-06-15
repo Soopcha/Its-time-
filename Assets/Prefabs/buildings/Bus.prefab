@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2292694271132614160}
   - component: {fileID: 3747214014681136318}
   - component: {fileID: 7485440665993813106}
+  - component: {fileID: 2129620101805762913}
   m_Layer: 0
   m_Name: Bus
   m_TagString: Untagged
@@ -167,3 +168,83 @@ MonoBehaviour:
   ObjectID: 4a7f2259-b95f-4161-8540-61a3a22281c3
   SavePosition: 1
   SaveActiveState: 1
+--- !u!60 &2129620101805762913
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9187683626296189780}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 5.65625, y: 3.9375}
+    newSize: {x: 5.65625, y: 3.9375}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 2.828125, y: -1.25}
+      - {x: 2.828125, y: -0.90625}
+      - {x: 2.765625, y: -0.78125}
+      - {x: 2.754736, y: -0.17776155}
+      - {x: 2.6840916, y: -0.23477316}
+      - {x: 2.598343, y: -0.1349082}
+      - {x: 2.535307, y: -0.18672276}
+      - {x: 2.3330383, y: -0.25406837}
+      - {x: 2.185688, y: -0.31701612}
+      - {x: 1.0462475, y: -0.5856409}
+      - {x: -1.3593102, y: 0.2523079}
+      - {x: -1.9200954, y: 0.42042446}
+      - {x: -2.164196, y: 0.4322586}
+      - {x: -2.3643856, y: 0.5497432}
+      - {x: -2.765625, y: 0.65625}
+      - {x: -2.828125, y: 0.59375}
+      - {x: -2.828125, y: -0.15625}
+      - {x: -2.734375, y: -0.5}
+      - {x: -2.359375, y: -0.5625}
+      - {x: -2.015625, y: -0.71875}
+      - {x: -1.671875, y: -0.96875}
+      - {x: -1.203125, y: -1.15625}
+      - {x: -0.984375, y: -1.40625}
+      - {x: -0.546875, y: -1.40625}
+      - {x: -0.390625, y: -1.625}
+      - {x: -0.265625, y: -1.625}
+      - {x: -0.015625, y: -1.875}
+      - {x: 0.078125, y: -1.9375}
+      - {x: 0.265625, y: -1.96875}
+      - {x: 0.828125, y: -1.96875}
+      - {x: 1.171875, y: -1.8125}
+      - {x: 1.609375, y: -1.59375}
+      - {x: 2.703125, y: -1.4375}
+  m_UseDelaunayMesh: 1
