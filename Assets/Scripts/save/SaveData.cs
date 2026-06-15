@@ -18,9 +18,10 @@ public class SaveData
     public bool HasReadNote;
     public bool HasKey;
     public bool PetrCutsceneDone;
+    public bool NikaCutsceneDone;  // НОВОЕ
 
     // Карта
-    public int MapSeed;  // Seed для воспроизведения Perlin Noise
+    public int MapSeed;
     public Vector2Int MapSize;
     public List<TileData> Tiles = new List<TileData>();
 
@@ -34,10 +35,13 @@ public class SaveData
     public bool HasHouse = false;
     public Vector2 HousePosition;
 
+    // Автобус
+    public bool HasBus = false;       // НОВОЕ
+    public Vector2 BusPosition;       // НОВОЕ
 
+    // NPC
     public List<SaveableNPCData> NPCs = new List<SaveableNPCData>();
 
-    // Конструктор по умолчанию
     public SaveData()
     {
         SaveName = "Новое сохранение";
@@ -46,7 +50,6 @@ public class SaveData
     }
 }
 
-// Данные одного тайла
 [System.Serializable]
 public class TileData
 {
@@ -60,12 +63,11 @@ public class TileData
     }
 }
 
-// Данные одного врага
 [System.Serializable]
 public class EnemyData
 {
     public Vector2 Position;
-    public string State;  // Patrol, Alert, Chase
+    public string State;
     public int PatrolIndex;
     public List<Vector2> PatrolPoints = new List<Vector2>();
 

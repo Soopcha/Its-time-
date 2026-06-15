@@ -17,15 +17,14 @@ public class EndingScreen : MonoBehaviour
     [Header("CG концовок")]
     public Sprite BadEnding1CG;
     public Sprite BadEnding2CG;
-    public Sprite GoodEndingCG;
+    public Sprite GoodEnding1CG;  // НОВОЕ — для концовки с Никой
     public Sprite TrueEndingCG;
 
-    // Фазы концовки
     private enum EndingPhase
     {
-        PreText,    // Чёрный экран до картинки
-        Image,      // Картинка + диалог
-        PostText    // Текст после картинки (например "ПЛОХАЯ КОНЦОВКА")
+        PreText,
+        Image,
+        PostText
     }
 
     private EndingPhase currentPhase;
@@ -33,7 +32,6 @@ public class EndingScreen : MonoBehaviour
     private bool isEndingActive = false;
     private bool justStarted = false;
 
-    // Данные для каждой фазы
     private string[] preTextSpeakers;
     private string[] preTextLines;
     private Sprite currentCG;
@@ -79,9 +77,9 @@ public class EndingScreen : MonoBehaviour
         }
     }
 
+    // ===== ПЛОХАЯ КОНЦОВКА 1 (с Петром) =====
     public void ShowBadEnding1()
     {
-        // Фаза 1: чёрный экран до картинки
         preTextSpeakers = new string[] { "", "" };
         preTextLines = new string[]
         {
@@ -89,7 +87,6 @@ public class EndingScreen : MonoBehaviour
             "...."
         };
 
-        // Картинка + диалог Петра
         currentCG = BadEnding1CG;
         imageSpeakers = new string[] { "Петр", "---", "Петр", "---", "Петр", "---", "", "" };
         imageLines = new string[]
@@ -104,11 +101,44 @@ public class EndingScreen : MonoBehaviour
             "Ещё полон сил я, ахахаха."
         };
 
-        // Фаза 3: текст после картинки
         postTextSpeakers = new string[] { "" };
         postTextLines = new string[]
         {
             "ПЛОХАЯ КОНЦОВКА"
+        };
+
+        StartEnding();
+    }
+
+    // ===== ХОРОШАЯ КОНЦОВКА 1 (с Никой) — НОВОЕ =====
+    public void ShowGoodEnding1()
+    {
+        preTextSpeakers = new string[] { "", "" };
+        preTextLines = new string[]
+        {
+            "*Несколько недель спустя*",
+            "..."
+        };
+
+        currentCG = GoodEnding1CG;
+        imageSpeakers = new string[] { "Ника", "---", "Рома", "Ника", "---", "Ника" };
+        imageLines = new string[]
+        {
+            "С ними было весело.",
+            "Я не заметила как осталась у них на неделю, а потом еще немного и еще...",
+            "Может мои воспоминания не важны, мне с ними так хорошо...",
+            "Соня, смотри! Я поймала целую банку консервов!",
+            "Ахаха, Ника, это же не зверь!",
+            "*улыбается*",
+            "Вот и хорошо. Сегодня праздник!",
+            "Вы классные. Я рада, что осталась.",
+            "Мы тоже, Соня. Мы тоже."
+        };
+
+        postTextSpeakers = new string[] { "" };
+        postTextLines = new string[]
+        {
+            "ХОРОШАЯ КОНЦОВКА: Новая семья"
         };
 
         StartEnding();
@@ -124,7 +154,6 @@ public class EndingScreen : MonoBehaviour
         currentPhase = EndingPhase.PreText;
         currentLine = 0;
 
-        // Скрываем картинку на первой фазе
         if (EndingImage != null)
             EndingImage.gameObject.SetActive(false);
 
@@ -146,7 +175,6 @@ public class EndingScreen : MonoBehaviour
         }
         else
         {
-            // Переходим к следующей фазе
             GoToNextPhase();
         }
     }
@@ -155,7 +183,6 @@ public class EndingScreen : MonoBehaviour
     {
         if (currentPhase == EndingPhase.PreText)
         {
-            // Переходим к картинке
             currentPhase = EndingPhase.Image;
             currentLine = 0;
 
@@ -171,7 +198,6 @@ public class EndingScreen : MonoBehaviour
         }
         else if (currentPhase == EndingPhase.Image)
         {
-            // Переходим к тексту после картинки
             currentPhase = EndingPhase.PostText;
             currentLine = 0;
 
@@ -183,7 +209,6 @@ public class EndingScreen : MonoBehaviour
         }
         else if (currentPhase == EndingPhase.PostText)
         {
-            // Всё закончилось - в меню
             ReturnToMenu();
         }
     }
@@ -229,9 +254,6 @@ public class EndingScreen : MonoBehaviour
     {
         Time.timeScale = 1f;
         isEndingActive = false;
-
-        // НЕ выключаем панель - пусть висит пока не загрузится меню
-        // EndingPanel.SetActive(false);  <-- убрали эту строку
 
         SceneManager.LoadScene("MainMenu");
     }

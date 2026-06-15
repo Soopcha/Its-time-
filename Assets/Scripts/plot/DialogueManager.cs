@@ -14,7 +14,7 @@ public class DialogueManager : MonoBehaviour
     public TMP_Text SpeakerText;
     public TMP_Text DialogueText;
     public TMP_Text HintText;
-    public Image PortraitImage; // ? НОВОЕ!
+    public Image PortraitImage;
 
     [Header("Выбор")]
     public GameObject ChoicePanel;
@@ -23,9 +23,11 @@ public class DialogueManager : MonoBehaviour
     public TMP_Text Choice1Text;
     public TMP_Text Choice2Text;
 
-    [Header("Портреты персонажей")] // ? НОВОЕ!
+    [Header("Портреты персонажей")]
     public Sprite PlayerPortrait;
     public Sprite PetrPortrait;
+    public Sprite NikaPortrait;  
+    public Sprite RomaPortrait;   
 
     private DialogueData currentData;
     private int currentNodeIndex;
@@ -174,18 +176,20 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    // ===== НОВЫЙ МЕТОД: Получить портрет по имени =====
     Sprite GetPortraitBySpeaker(string speaker)
     {
-        // Игрок
         if (speaker == "---")
             return PlayerPortrait;
 
-        // Петр
-        if (speaker.Contains("странный мужик") || speaker.Contains("Петр"))
+        if (speaker.Contains("Петр") || speaker.Contains("странный мужик"))
             return PetrPortrait;
 
-        // Для записок/системных сообщений — нет портрета
+        if (speaker == "Ника")
+            return NikaPortrait;
+
+        if (speaker == "Рома")
+            return RomaPortrait;
+
         return null;
     }
 
@@ -227,13 +231,14 @@ public class DialogueManager : MonoBehaviour
         waitingForChoice = false;
         ChoicePanel.SetActive(false);
 
+        // ИСПРАВЛЕНИЕ: Сначала вызываем Action (например, добавляем очки)
         if (!string.IsNullOrEmpty(choice.Action))
         {
             onAction?.Invoke(choice.Action);
-            EndDialogue();
-            return;
+            // НЕ завершаем диалог, а продолжаем!
         }
 
+        // Переходим к следующему узлу
         if (choice.NextNodeIndex >= 0)
         {
             currentNodeIndex = choice.NextNodeIndex;

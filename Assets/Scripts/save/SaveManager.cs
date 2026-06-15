@@ -64,8 +64,6 @@ public class SaveManager : MonoBehaviour
         File.WriteAllText(GetSlotPath(slotIndex), json);
 
         Debug.Log($"Игра сохранена в слот {slotIndex}");
-        Debug.Log($"Путь: {GetSlotPath(slotIndex)}");
-        Debug.Log($"Дата: {data.SaveDate}");
     }
 
     public void LoadGame(int slotIndex)
@@ -128,6 +126,7 @@ public class SaveManager : MonoBehaviour
             data.HasReadNote = GameState.Instance.HasReadNote;
             data.HasKey = GameState.Instance.HasKey;
             data.PetrCutsceneDone = GameState.Instance.PetrCutsceneDone;
+            data.NikaCutsceneDone = GameState.Instance.NikaCutsceneDone;  // НОВОЕ
             data.PlayTime = GameState.Instance.PlayTime;
         }
 
@@ -166,18 +165,11 @@ public class SaveManager : MonoBehaviour
         }
 
         SaveableObject[] saveableObjects = FindObjectsOfType<SaveableObject>(true);
-        Debug.Log($"Найдено SaveableObject на сцене: {saveableObjects.Length}");
-
         foreach (var obj in saveableObjects)
         {
             SaveableObjectData objData = obj.GetSaveData();
             data.SaveableObjects.Add(objData);
-
-            // НОВОЕ: Логируем каждый объект
-            Debug.Log($"Сохраняем: {obj.name}, ID={objData.ObjectID}, Active={objData.IsActive}, Pos={objData.Position}");
         }
-
-        Debug.Log($"Сохранено объектов: {data.SaveableObjects.Count}");
 
         SaveableNPC[] npcs = FindObjectsOfType<SaveableNPC>();
         foreach (var npc in npcs)
@@ -192,6 +184,15 @@ public class SaveManager : MonoBehaviour
             data.HasHouse = true;
             data.HousePosition = house.transform.position;
             Debug.Log($"Сохраняем дом в позиции: {data.HousePosition}");
+        }
+
+        // Автобус — НОВОЕ
+        GameObject bus = GameObject.Find("Bus(Clone)");
+        if (bus != null)
+        {
+            data.HasBus = true;
+            data.BusPosition = bus.transform.position;
+            Debug.Log($"Сохраняем автобус в позиции: {data.BusPosition}");
         }
 
         return data;
@@ -216,11 +217,6 @@ public class SaveManager : MonoBehaviour
         {
             player.transform.position = data.PlayerPosition;
             player.CurrentHealth = data.PlayerHealth;
-            Debug.Log($"Игрок: позиция {data.PlayerPosition}, здоровье {data.PlayerHealth}");
-        }
-        else
-        {
-            Debug.LogWarning("PlayerController не найден!");
         }
 
         if (GameState.Instance != null)
@@ -228,12 +224,8 @@ public class SaveManager : MonoBehaviour
             GameState.Instance.HasReadNote = data.HasReadNote;
             GameState.Instance.HasKey = data.HasKey;
             GameState.Instance.PetrCutsceneDone = data.PetrCutsceneDone;
+            GameState.Instance.NikaCutsceneDone = data.NikaCutsceneDone;  // НОВОЕ
             GameState.Instance.PlayTime = data.PlayTime;
-            Debug.Log($"Сюжет: записка={data.HasReadNote}, ключ={data.HasKey}");
-        }
-        else
-        {
-            Debug.LogWarning("GameState не найден!");
         }
 
         WFCGenerator2DAuto generator = FindObjectOfType<WFCGenerator2DAuto>();
@@ -241,8 +233,6 @@ public class SaveManager : MonoBehaviour
         {
             generator.ShouldGenerate = false;
             generator.ClearMap();
-
-            Debug.Log($"Восстанавливаем {data.Tiles.Count} тайлов...");
 
             foreach (var tileData in data.Tiles)
             {
@@ -254,10 +244,6 @@ public class SaveManager : MonoBehaviour
             }
 
             Debug.Log("Карта восстановлена!");
-        }
-        else
-        {
-            Debug.LogWarning("WFCGenerator не найден!");
         }
 
         // Дом Петра
@@ -280,7 +266,25 @@ public class SaveManager : MonoBehaviour
             }
         }
 
+        // Автобус — НОВОЕ
+        if (data.HasBus)
+        {
+            BusSpawner spawner = FindObjectOfType<BusSpawner>();
+            if (spawner != null && spawner.BusPrefab != null)
+            {
+                GameObject bus = Instantiate(spawner.BusPrefab, data.BusPosition, Quaternion.identity);
 
+                SaveableObject saveable = bus.GetComponent<SaveableObject>();
+                if (saveable == null)
+                {
+                    saveable = bus.AddComponent<SaveableObject>();
+                }
+                saveable.SavePosition = true;
+                saveable.SaveActiveState = true;
+
+                Debug.Log($"Автобус восстановлен в позиции: {data.BusPosition}");
+            }
+        }
 
         StartCoroutine(RestoreObjectsAfterDelay(data));
     }
@@ -288,8 +292,6 @@ public class SaveManager : MonoBehaviour
     IEnumerator RestoreObjectsAfterDelay(SaveData data)
     {
         yield return new WaitForSeconds(0.1f);
-
-        Debug.Log($"Применяем состояние {data.SaveableObjects.Count} объектов...");
 
         SaveableObject[] currentObjects = FindObjectsOfType<SaveableObject>(true);
 
@@ -300,15 +302,8 @@ public class SaveManager : MonoBehaviour
             if (obj != null)
             {
                 obj.LoadData(objData);
-                Debug.Log($"Объект {obj.name}: активен={objData.IsActive}");
-            }
-            else
-            {
-                Debug.LogWarning($"Объект с ID {objData.ObjectID} не найден - возможно уже удалён");
             }
         }
-
-        Debug.Log($"Применяем состояние {data.NPCs.Count} NPC...");
 
         SaveableNPC[] currentNPCs = FindObjectsOfType<SaveableNPC>(true);
         foreach (var npcData in data.NPCs)
@@ -318,11 +313,6 @@ public class SaveManager : MonoBehaviour
             if (npc != null)
             {
                 npc.LoadData(npcData);
-                Debug.Log($"NPC {npc.name} загружен");
-            }
-            else
-            {
-                Debug.LogWarning($"NPC с ID {npcData.ObjectID} не найден");
             }
         }
 
