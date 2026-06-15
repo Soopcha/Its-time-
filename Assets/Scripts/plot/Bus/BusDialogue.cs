@@ -81,54 +81,128 @@ public class BusDialogue : MonoBehaviour
         // Узел 13: История Ники (+1 очко)
         var node13 = data.AddNode();
         node13.Lines.Add(new DialogueLine("Ника", "О, это долгая история..."));
-        node13.Lines.Add(new DialogueLine("Ника", "Мы с Ромой ехали на восток, когда всё началось."));
+        node13.Lines.Add(new DialogueLine("Ника", "Мы с Ромой ехали на север, когда всё началось."));
         node13.Lines.Add(new DialogueLine("Ника", "Автобус сломался прямо здесь. Водитель ушёл за помощью и не вернулся."));
         node13.Lines.Add(new DialogueLine("Ника", "Мы решили остаться — внутри хотя бы безопасно."));
-        node13.Lines.Add(new DialogueLine("Рома", "В других местах рядом не так уютно."));
+        node13.Lines.Add(new DialogueLine("Рома", "Уже будто сто лет тут."));
         node13.Lines.Add(new DialogueLine("Ника", "Зато научились охотиться! Я теперь вообще крутая охотница."));
         node13.Lines.Add(new DialogueLine("Ника", "*смеётся*"));
-        node13.NextNodeIndex = 15;
+        node13.NextNodeIndex = 15; // Переход к расспросам о мире
 
         // Узел 14: Промолчали (0 очков)
         var node14 = data.AddNode();
         node14.Lines.Add(new DialogueLine("Ника", "Ну да. Но мы справляемся."));
-        node14.NextNodeIndex = 15;
+        node14.NextNodeIndex = 15; // Тоже к расспросам
 
-        // Узел 15: Пустой узел для завершения первого диалога
+        // ===== НОВОЕ: Узел 15 — Расспросы о мире (только если >= 1 очко) =====
         var node15 = data.AddNode();
         node15.Lines.Add(new DialogueLine("", ""));
-        node15.NextNodeIndex = -1;
+        node15.NextNodeIndex = -1; // Будет обработано в onEnd
 
         DialogueManager.Instance.StartDialogue(data,
             onEnd: () =>
             {
-                GameState.Instance.NikaCutsceneDone = true;
-                ShowEndingByPoints();
+                // После первого диалога — проверяем очки и решаем, показывать ли расспросы
+                if (points >= 1)
+                {
+                    StartWorldLoreDialogue(); // Расспросы о мире
+                }
+                else
+                {
+                    GameState.Instance.NikaCutsceneDone = true;
+                    StartBadNikaDialogue(); // Сразу прогоняют
+                }
             },
             onAction: (action) =>
             {
                 if (action == "ASK_ROMA")
                 {
-                    // Спросила про Рому — 0 очков
                     Debug.Log("Спросила про Рому: 0 очков");
                 }
                 else if (action == "SKIP_ROMA")
                 {
-                    // Промолчала — +1 очко
                     points += 1;
                     Debug.Log($"Промолчала про Рому: +1 очко. Итого: {points}");
                 }
                 else if (action == "ASK_STORY")
                 {
-                    // Спросила историю — +1 очко
                     points += 1;
                     Debug.Log($"Спросила историю: +1 очко. Итого: {points}");
                 }
                 else if (action == "SKIP_STORY")
                 {
-                    // Промолчала — 0 очков
                     Debug.Log("Промолчала про историю: 0 очков");
                 }
+            }
+        );
+    }
+
+    // ===== НОВОЕ: Диалог о мире (лор про зомби-вирус) =====
+    void StartWorldLoreDialogue()
+    {
+        var data = new DialogueData();
+
+        var node0 = data.AddNode();
+        node0.Lines.Add(new DialogueLine("---", "А что вообще случилось? Я правда ничего не помню..."));
+        node0.NextNodeIndex = 1;
+
+        var node1 = data.AddNode();
+        node1.Lines.Add(new DialogueLine("Ника", "Серьёзно? Ты что, амнезия у тебя?"));
+        node1.NextNodeIndex = 2;
+
+        var node2 = data.AddNode();
+        node2.Lines.Add(new DialogueLine("---", "Наверное... Всё как в тумане."));
+        node2.NextNodeIndex = 3;
+
+        var node3 = data.AddNode();
+        node3.Lines.Add(new DialogueLine("Ника", "Окей..."));
+        node3.Lines.Add(new DialogueLine("Ника", "Года три назад по миру прошёл вирус."));
+        node3.Lines.Add(new DialogueLine("Ника", "Началось всё в Азии, потом Африка, потом и до нас дошло."));
+        node3.NextNodeIndex = 4;
+
+        var node4 = data.AddNode();
+        node4.Lines.Add(new DialogueLine("Рома", "Весь мир заражён..."));
+        node4.NextNodeIndex = 5;
+
+        var node5 = data.AddNode();
+        node5.Lines.Add(new DialogueLine("Ника", "Ага. Евразия и Африка — полный ужас. Ходят вокруг эти черные..."));
+        node5.Lines.Add(new DialogueLine("Ника", "Остальные континенты нас изолировали. Закрыли границы."));
+        node5.Lines.Add(new DialogueLine("Ника", "Так то обещали эвакуацию, но сейчас света почти нигде нет, мы не знаем где и когда она будет"));
+        node5.Lines.Add(new DialogueLine("Ника", "Последняя была года 3 назад, и почти никто не поместился в их маленьком самолетике"));
+        node5.NextNodeIndex = 6;
+
+        var node6 = data.AddNode();
+        node6.Lines.Add(new DialogueLine("---", "И теперь никто не приезжает?"));
+        node6.NextNodeIndex = 7;
+
+        var node7 = data.AddNode();
+        node7.Lines.Add(new DialogueLine("Ника", "Никто. Мы брошены."));
+        node7.Lines.Add(new DialogueLine("Ника", "Повсюду монстры. Люди живут кучками, где кто выжил."));
+        node7.Lines.Add(new DialogueLine("Ника", "Мы вот в этом автобусе пока что. Других вариантов нет."));
+        node7.NextNodeIndex = 8;
+
+        var node8 = data.AddNode();
+        node8.Lines.Add(new DialogueLine("Рома", "Но все не так плохо, тут много животных."));
+        node8.NextNodeIndex = 9;
+
+        var node9 = data.AddNode();
+        node9.Lines.Add(new DialogueLine("Ника", "*усмехнулась* Агаа."));
+        node9.Lines.Add(new DialogueLine("Ника", "Может когда-нибудь что-то изменится. А пока... живём как можем."));
+        node9.NextNodeIndex = 10;
+
+        var node10 = data.AddNode();
+        node10.Lines.Add(new DialogueLine("---", "Понятно. Спасибо, что рассказали."));
+        node10.NextNodeIndex = 11;
+
+        var node11 = data.AddNode();
+        node11.Lines.Add(new DialogueLine("Ника", "Не за что. Главное — не сдавайся. Здесь это важно."));
+        node11.NextNodeIndex = -1;
+
+        DialogueManager.Instance.StartDialogue(data,
+            onEnd: () =>
+            {
+                GameState.Instance.NikaCutsceneDone = true;
+                ShowEndingByPoints(); // Теперь переходим к финальной развилке
             }
         );
     }
