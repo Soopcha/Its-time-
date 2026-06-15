@@ -27,12 +27,16 @@ public class MenuManager : MonoBehaviour
     public Button BackFromSettingsButton;
     public Button BackFromAboutButton;
 
-    [Header("Настройки (текст в About)")]
+    [Header("Настройки")]
+    public Slider MusicVolumeSlider;
+    public Slider SFXVolumeSlider;
+
+    [Header("Текст в About")]
     public TMPro.TMP_Text AboutText;
 
     void Start()
     {
-        // Привязываем кнопки
+        // Привязываем кнопки главного меню
         NewGameButton.onClick.AddListener(OnNewGame);
         ContinueButton.onClick.AddListener(OnContinue);
         SettingsButton.onClick.AddListener(OnSettings);
@@ -42,11 +46,18 @@ public class MenuManager : MonoBehaviour
         BackFromSettingsButton.onClick.AddListener(OnBackToMenu);
         BackFromAboutButton.onClick.AddListener(OnBackToMenu);
 
+        // Привязываем кнопки слотов
+        Slot1Button.onClick.AddListener(() => LoadSlot(1));
+        Slot2Button.onClick.AddListener(() => LoadSlot(2));
+        Slot3Button.onClick.AddListener(() => LoadSlot(3));
+        BackFromSlotsButton.onClick.AddListener(OnBackToMenu);
+
         // Показываем главное меню
         ShowMainMenu();
 
-        // Проверяем есть ли сохранение (пока отключено)
-        ContinueButton.interactable = false;
+        // Обновляем кнопки
+        UpdateSlotButtons();
+        UpdateContinueButton();
 
         // Заполняем текст "Об игре"
         if (AboutText != null)
@@ -56,20 +67,19 @@ public class MenuManager : MonoBehaviour
                             "Версия: 0.1 Alpha\n\n" +
                             "Unity 2D | WFC + Perlin Noise";
         }
+
         // Запускаем музыку меню
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayMenuMusic();
         }
 
-        // Привязываем кнопки слотов
-        Slot1Button.onClick.AddListener(() => LoadSlot(1));
-        Slot2Button.onClick.AddListener(() => LoadSlot(2));
-        Slot3Button.onClick.AddListener(() => LoadSlot(3));
-        BackFromSlotsButton.onClick.AddListener(OnBackToMenu);
+        // Загружаем настройки
+        LoadSettings();
 
-        UpdateSlotButtons();
-        UpdateContinueButton();
+        // Привязываем события настроек
+        MusicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
+        SFXVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
     }
 
     void UpdateContinueButton()
@@ -80,15 +90,13 @@ public class MenuManager : MonoBehaviour
             return;
         }
 
-        // Проверяем есть ли хотя бы одно сохранение
         bool hasSaves = SaveManager.Instance.SlotExists(1) ||
                         SaveManager.Instance.SlotExists(2) ||
                         SaveManager.Instance.SlotExists(3);
 
         ContinueButton.interactable = hasSaves;
-
-        Debug.Log($"Кнопка 'Продолжить': {(hasSaves ? "активна" : "неактивна")}");
     }
+
     void ShowMainMenu()
     {
         MainMenuPanel.SetActive(true);
@@ -99,14 +107,10 @@ public class MenuManager : MonoBehaviour
 
     void OnNewGame()
     {
-        //  Сбрасываем флаг (чтобы сгенерировать новую карту)
         PlayerPrefs.SetInt("ShouldGenerate", 1);
-        PlayerPrefs.DeleteKey("LoadSlotIndex"); // Удаляем слот загрузки
+        PlayerPrefs.DeleteKey("LoadSlotIndex");
         PlayerPrefs.Save();
 
-        Debug.Log(" Новая игра: карта будет сгенерирована");
-
-        // Загружаем игровую сцену
         SceneManager.LoadScene("Game");
     }
 
@@ -132,7 +136,7 @@ public class MenuManager : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+        Application.Quit();
 #endif
     }
 
@@ -162,7 +166,6 @@ public class MenuManager : MonoBehaviour
                 SaveData data = SaveManager.Instance.GetSlotInfo(slotIndex);
                 if (data != null)
                 {
-                    // Показываем дату и время игры
                     int hours = Mathf.FloorToInt(data.PlayTime / 3600f);
                     int minutes = Mathf.FloorToInt((data.PlayTime % 3600f) / 60f);
 
@@ -180,17 +183,44 @@ public class MenuManager : MonoBehaviour
 
     void LoadSlot(int slotIndex)
     {
-        //  Устанавливаем флаг "НЕ генерировать"
         PlayerPrefs.SetInt("ShouldGenerate", 0);
         PlayerPrefs.SetInt("LoadSlotIndex", slotIndex);
         PlayerPrefs.Save();
 
-        Debug.Log($" Загрузка слота {slotIndex}: генерация отключена");
-
-        //  Загружаем данные
         SaveManager.Instance.LoadGame(slotIndex);
-
-        //  Загружаем сцену
         SceneManager.LoadScene("Game");
+    }
+
+    void LoadSettings()
+    {
+        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.7f);
+        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 0.8f);
+
+        MusicVolumeSlider.value = musicVolume;
+        SFXVolumeSlider.value = sfxVolume;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetMusicVolume(musicVolume);
+            AudioManager.Instance.SetSFXVolume(sfxVolume);
+        }
+    }
+
+    void OnMusicVolumeChanged(float value)
+    {
+        PlayerPrefs.SetFloat("MusicVolume", value);
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetMusicVolume(value);
+        }
+    }
+
+    void OnSFXVolumeChanged(float value)
+    {
+        PlayerPrefs.SetFloat("SFXVolume", value);
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetSFXVolume(value);
+        }
     }
 }

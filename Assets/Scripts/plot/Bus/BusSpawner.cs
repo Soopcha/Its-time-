@@ -9,6 +9,10 @@ public class BusSpawner : MonoBehaviour
     public WFCGenerator2DAuto Generator;
     public int MaxAttempts = 50;
 
+    [Header("Безопасная зона")]
+    [Tooltip("Отступ от края карты в тайлах")]
+    public int SafeZoneTiles = 3;  // Не спавнится ближе 3 тайлов к краю
+
     [Header("Не спавнить если загрузка")]
     public bool SpawnOnlyOnNewGame = true;
 
@@ -38,8 +42,9 @@ public class BusSpawner : MonoBehaviour
 
         for (int attempt = 0; attempt < MaxAttempts; attempt++)
         {
-            int x = Random.Range(0, mapSize.x);
-            int y = Random.Range(0, mapSize.y);
+            // Спавним с отступом от краёв
+            int x = Random.Range(SafeZoneTiles, mapSize.x - SafeZoneTiles);
+            int y = Random.Range(SafeZoneTiles, mapSize.y - SafeZoneTiles);
 
             if (IsFieldTile(x, y))
             {
@@ -54,7 +59,7 @@ public class BusSpawner : MonoBehaviour
                 saveable.SavePosition = true;
                 saveable.SaveActiveState = true;
 
-                Debug.Log($"Автобус заспавнен в ({x}, {y})");
+                Debug.Log($"Автобус заспавнен в ({x}, {y}) - в безопасной зоне");
                 return;
             }
         }

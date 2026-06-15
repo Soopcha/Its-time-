@@ -4,9 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    [Header("UI")]
+    [Header("UI Панели")]
     public GameObject PausePanel;
-    public GameObject SaveSlotsPanel; 
+    public GameObject SaveSlotsPanel;
+    public GameObject SettingsPanel;
 
     [Header("Кнопки главного меню паузы")]
     public Button ResumeButton;
@@ -20,12 +21,18 @@ public class PauseMenu : MonoBehaviour
     public Button Slot3Button;
     public Button BackFromSlotsButton;
 
+    [Header("Настройки")]
+    public Slider MusicVolumeSlider;
+    public Slider SFXVolumeSlider;
+    public Button BackFromSettingsButton;
+
     private bool isPaused = false;
 
     void Start()
     {
         PausePanel.SetActive(false);
         SaveSlotsPanel.SetActive(false);
+        SettingsPanel.SetActive(false);
 
         // Главное меню паузы
         ResumeButton.onClick.AddListener(Resume);
@@ -38,11 +45,22 @@ public class PauseMenu : MonoBehaviour
         Slot2Button.onClick.AddListener(() => SaveToSlot(2));
         Slot3Button.onClick.AddListener(() => SaveToSlot(3));
         BackFromSlotsButton.onClick.AddListener(HideSaveSlots);
+
+        // Настройки
+        BackFromSettingsButton.onClick.AddListener(HideSettings);
+
+        // Загружаем сохранённые настройки
+        LoadSettings();
+
+        // Привязываем события
+        MusicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
+        SFXVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
     }
 
     void Update()
     {
-        if (UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
+        if (UnityEngine.InputSystem.Keyboard.current != null &&
+            UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (isPaused)
                 Resume();
@@ -55,7 +73,8 @@ public class PauseMenu : MonoBehaviour
     {
         isPaused = true;
         PausePanel.SetActive(true);
-        SaveSlotsPanel.SetActive(false);  // Скрываем слоты
+        SaveSlotsPanel.SetActive(false);
+        SettingsPanel.SetActive(false);
         Time.timeScale = 0f;
     }
 
@@ -64,6 +83,7 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         PausePanel.SetActive(false);
         SaveSlotsPanel.SetActive(false);
+        SettingsPanel.SetActive(false);
         Time.timeScale = 1f;
     }
 
@@ -99,7 +119,6 @@ public class PauseMenu : MonoBehaviour
                 SaveData data = SaveManager.Instance.GetSlotInfo(slotIndex);
                 if (data != null)
                 {
-                    // Показываем дату и время игры
                     int hours = Mathf.FloorToInt(data.PlayTime / 3600f);
                     int minutes = Mathf.FloorToInt((data.PlayTime % 3600f) / 60f);
 
@@ -119,18 +138,53 @@ public class PauseMenu : MonoBehaviour
     {
         SaveManager.Instance.SaveGame(slotIndex);
         Debug.Log($" Сохранено в слот {slotIndex}");
-
-        // Обновляем кнопки
         UpdateSlotButtons();
-
-        // Показываем уведомление (опционально)
-        // ShowNotification($"Игра сохранена в слот {slotIndex}");
     }
 
     void OpenSettings()
     {
-        Debug.Log("Настройки (пока не реализовано)");
-        // Здесь можно открыть панель настроек
+        PausePanel.SetActive(false);
+        SettingsPanel.SetActive(true);
+    }
+
+    void HideSettings()
+    {
+        SettingsPanel.SetActive(false);
+        PausePanel.SetActive(true);
+    }
+
+    void LoadSettings()
+    {
+        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.7f);
+        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 0.8f);
+
+        MusicVolumeSlider.value = musicVolume;
+        SFXVolumeSlider.value = sfxVolume;
+
+        // Применяем настройки
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetMusicVolume(musicVolume);
+            AudioManager.Instance.SetSFXVolume(sfxVolume);
+        }
+    }
+
+    void OnMusicVolumeChanged(float value)
+    {
+        PlayerPrefs.SetFloat("MusicVolume", value);
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetMusicVolume(value);
+        }
+    }
+
+    void OnSFXVolumeChanged(float value)
+    {
+        PlayerPrefs.SetFloat("SFXVolume", value);
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetSFXVolume(value);
+        }
     }
 
     void ReturnToMenu()

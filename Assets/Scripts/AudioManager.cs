@@ -8,11 +8,8 @@ public class AudioManager : MonoBehaviour
     public AudioClip MenuMusic;
     public AudioClip GameMusic;
 
-    [Header("Настройки")]
-    [Range(0f, 1f)]
-    public float MusicVolume = 0.5f;
-
     private AudioSource musicSource;
+    private AudioSource sfxSource;
 
     void Awake()
     {
@@ -28,10 +25,24 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        // Создаём AudioSource
+        // Создаём AudioSource для музыки
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.loop = true;
-        musicSource.volume = MusicVolume;
+        musicSource.playOnAwake = false;
+
+        // Создаём AudioSource для звуков
+        sfxSource = gameObject.AddComponent<AudioSource>();
+        sfxSource.loop = false;
+        sfxSource.playOnAwake = false;
+
+        // Загружаем сохранённую громкость
+        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.7f);
+        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 0.8f);
+
+        musicSource.volume = musicVolume;
+        sfxSource.volume = sfxVolume;
+
+        Debug.Log($" AudioManager: Музыка={musicVolume}, Звуки={sfxVolume}");
     }
 
     public void PlayMenuMusic()
@@ -40,6 +51,7 @@ public class AudioManager : MonoBehaviour
         {
             musicSource.clip = MenuMusic;
             musicSource.Play();
+            Debug.Log(" Играет музыка меню");
         }
     }
 
@@ -49,6 +61,7 @@ public class AudioManager : MonoBehaviour
         {
             musicSource.clip = GameMusic;
             musicSource.Play();
+            Debug.Log(" Играет игровая музыка");
         }
     }
 
@@ -57,9 +70,42 @@ public class AudioManager : MonoBehaviour
         musicSource.Stop();
     }
 
-    public void SetVolume(float volume)
+    // Воспроизведение звукового эффекта
+    public void PlaySFX(AudioClip clip)
     {
-        MusicVolume = Mathf.Clamp01(volume);
-        musicSource.volume = MusicVolume;
+        if (clip != null)
+        {
+            sfxSource.PlayOneShot(clip);
+        }
+    }
+
+    // Установка громкости музыки
+    public void SetMusicVolume(float volume)
+    {
+        volume = Mathf.Clamp01(volume);
+        musicSource.volume = volume;
+        PlayerPrefs.SetFloat("MusicVolume", volume);
+        Debug.Log($"Громкость музыки: {volume}");
+    }
+
+    // Установка громкости звуков
+    public void SetSFXVolume(float volume)
+    {
+        volume = Mathf.Clamp01(volume);
+        sfxSource.volume = volume;
+        PlayerPrefs.SetFloat("SFXVolume", volume);
+        Debug.Log($"Громкость звуков: {volume}");
+    }
+
+    // Получить текущую громкость музыки
+    public float GetMusicVolume()
+    {
+        return musicSource.volume;
+    }
+
+    // Получить текущую громкость звуков
+    public float GetSFXVolume()
+    {
+        return sfxSource.volume;
     }
 }
