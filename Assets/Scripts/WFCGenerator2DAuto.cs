@@ -40,26 +40,72 @@ public class WFCGenerator2DAuto : MonoBehaviour
         public Vector2 OffsetInTiles = new Vector2(-0.5f, 1.5f);
     }
 
+    [Header("Замена тайлов в запрещённых зонах")]
+    [Tooltip("Префаб тайла который будет ставиться вместо удалённых деревьев/камней")]
+    public Tile2DAuto ReplacementTile;  // ? НОВОЕ: назначь grass_0
+
     [Header("Загрузка")]
     public bool ShouldGenerate = true;
 
-    // ===== Запрещённые зоны =====
     private List<Bounds> forbiddenZones = new List<Bounds>();
-
-    // ===== НОВОЕ: Список всех заспавненных тайлов =====
     private List<GameObject> spawnedTiles = new List<GameObject>();
 
     public void AddForbiddenZone(Vector3 center, Vector2 size)
     {
         Bounds bounds = new Bounds(center, new Vector3(size.x, size.y, 0));
         forbiddenZones.Add(bounds);
-        Debug.Log($"Запрещённая зона добавлена: центр={center}, размер={size}");
+        Debug.Log($" Запрещённая зона добавлена: центр={center}, размер={size}");
 
-        // ===== НОВОЕ: Удаляем уже существующие тайлы в этой зоне =====
-        RemoveTilesInZone(bounds);
+        ReplaceTilesInZone(bounds);  // ? ИЗМЕНЕНО: заменяем вместо удаления
     }
 
-    // ===== НОВОЕ: Удаление тайлов в запрещённой зоне =====
+    // ===== ИЗМЕНЕНО: Заменяем тайлы вместо удаления =====
+    void ReplaceTilesInZone(Bounds zone)
+    {
+        if (ReplacementTile == null)
+        {
+            Debug.LogWarning(" ReplacementTile не назначен! Тайлы будут удалены.");
+            RemoveTilesInZone(zone);
+            return;
+        }
+
+        int replacedCount = 0;
+
+        for (int i = spawnedTiles.Count - 1; i >= 0; i--)
+        {
+            if (spawnedTiles[i] == null) continue;
+
+            Vector3 tilePos = spawnedTiles[i].transform.position;
+
+            if (zone.Contains(tilePos))
+            {
+                if (HasOverlay(spawnedTiles[i]))
+                {
+                    // Удаляем старый тайл
+                    GameObject oldTile = spawnedTiles[i];
+                    spawnedTiles.RemoveAt(i);
+                    Destroy(oldTile);
+
+                    // Спавним замену (траву)
+                    GameObject newTile = Instantiate(
+                        ReplacementTile.gameObject,
+                        tilePos,
+                        Quaternion.identity,
+                        transform
+                    );
+
+                    spawnedTiles.Add(newTile);
+
+                    Debug.Log($" Заменили тайл на {ReplacementTile.name} в позиции {tilePos}");
+                    replacedCount++;
+                }
+            }
+        }
+
+        Debug.Log($" Заменено {replacedCount} тайлов на {ReplacementTile.name}");
+    }
+
+    // ===== Старый метод (на случай если ReplacementTile не назначен) =====
     void RemoveTilesInZone(Bounds zone)
     {
         int removedCount = 0;
@@ -72,10 +118,9 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
             if (zone.Contains(tilePos))
             {
-                // Проверяем что это тайл с оверлеем (дерево/камень)
                 if (HasOverlay(spawnedTiles[i]))
                 {
-                    Debug.Log($" Удаляем тайл на позиции {tilePos} (в запрещённой зоне)");
+                    Debug.Log($" Удаляем тайл на позиции {tilePos}");
                     Destroy(spawnedTiles[i]);
                     spawnedTiles.RemoveAt(i);
                     removedCount++;
@@ -83,15 +128,14 @@ public class WFCGenerator2DAuto : MonoBehaviour
             }
         }
 
-        Debug.Log($" Удалено {removedCount} тайлов в запрещённой зоне");
+        Debug.Log($" Удалено {removedCount} тайлов");
     }
 
-    // ===== НОВОЕ: Проверка есть ли у тайла оверлей =====
     bool HasOverlay(GameObject tile)
     {
-        // Проверяем по имени тайла
-        string tileName = tile.name;
+        string tileName = tile.name.Replace("(Clone)", "");
 
+        // Проверяем по списку оверлеев
         foreach (var data in Overlays)
         {
             if (!string.IsNullOrEmpty(data.TileNameContains) &&
@@ -99,6 +143,20 @@ public class WFCGenerator2DAuto : MonoBehaviour
             {
                 return true;
             }
+        }
+
+        // Явно проверяем наличие tree_ и stone_ в имени
+        if (tileName.Contains("tree_") || tileName.Contains("Tree") ||
+            tileName.Contains("stone_") || tileName.Contains("Stone") ||
+            tileName.Contains("rock_") || tileName.Contains("Rock"))
+        {
+            return true;
+        }
+
+        // Проверяем наличие компонента SpriteOverlay
+        if (tile.GetComponent<SpriteOverlay>() != null)
+        {
+            return true;
         }
 
         return false;
@@ -189,16 +247,16 @@ public class WFCGenerator2DAuto : MonoBehaviour
         {
             if (ShowDebugLogs && currentRetryCount > 1)
             {
-                Debug.Log($" Карта сгенерирована с {currentRetryCount} попытки! Всего тупиков: {totalDeadEnds}");
+                Debug.Log($"? Карта сгенерирована с {currentRetryCount} попытки! Всего тупиков: {totalDeadEnds}");
             }
             else if (ShowDebugLogs)
             {
-                Debug.Log($" Карта сгенерирована с первой попытки!");
+                Debug.Log($"? Карта сгенерирована с первой попытки!");
             }
         }
         else
         {
-            Debug.LogError($" НЕ УДАЛОСЬ сгенерировать карту за {MaxRetries} попыток! Тупиков: {totalDeadEnds}");
+            Debug.LogError($"? НЕ УДАЛОСЬ сгенерировать карту за {MaxRetries} попыток! Тупиков: {totalDeadEnds}");
         }
     }
 
@@ -482,7 +540,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
                     Vector3 position = new Vector3(x * TileSize, y * TileSize, 0);
                     GameObject placed = Instantiate(prefab.gameObject, position, Quaternion.identity, transform);
 
-                    // ===== НОВОЕ: Сохраняем заспавненный тайл =====
                     spawnedTiles.Add(placed);
 
                     SpriteRenderer sr = placed.GetComponent<SpriteRenderer>();
@@ -527,6 +584,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
         }
 
         forbiddenZones.Clear();
-        spawnedTiles.Clear();  // ===== НОВОЕ =====
+        spawnedTiles.Clear();
     }
 }
