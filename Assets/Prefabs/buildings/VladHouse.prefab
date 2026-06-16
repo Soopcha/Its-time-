@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6742081111975563695}
   - component: {fileID: 7537431827325789739}
   - component: {fileID: 9102624069974855174}
+  - component: {fileID: 2626127336128837943}
   m_Layer: 0
   m_Name: VladHouse
   m_TagString: Untagged
@@ -168,3 +169,55 @@ MonoBehaviour:
   SortingLayer: Player
   YOffset: -1.5
   UseParentPosition: 0
+--- !u!68 &2626127336128837943
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4183187461864113899}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -2.4616842, y: -1.8316038}
+  - {x: -1.5427738, y: -2.3009844}
+  - {x: 0.09267831, y: -2.5024817}
+  - {x: 1.6373947, y: -2.3401465}
+  - {x: 2.494365, y: -1.9358621}
+  - {x: 2.4359493, y: -0.8992162}
+  - {x: 1.7993191, y: -0.37105554}
+  - {x: 0.429945, y: -0.23046376}
+  - {x: -0.99060243, y: -0.3954685}
+  - {x: -2.3578396, y: -0.8673016}
+  - {x: -2.4474404, y: -1.7677107}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0

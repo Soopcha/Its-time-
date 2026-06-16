@@ -3489,6 +3489,7 @@ GameObject:
   - component: {fileID: 804391221}
   - component: {fileID: 804391223}
   - component: {fileID: 804391222}
+  - component: {fileID: 804391224}
   m_Layer: 0
   m_Name: VladHouseInteriorRoot
   m_TagString: Untagged
@@ -3584,6 +3585,62 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!68 &804391224
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 804391220}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: 3.000792, y: -2.0407906}
+  - {x: 3.007687, y: -1.6345956}
+  - {x: 1.9322824, y: -1.6312935}
+  - {x: 1.1210971, y: -0.7339624}
+  - {x: 0.7877102, y: -0.7261443}
+  - {x: 0.56777, y: -0.9860153}
+  - {x: -0.14534998, y: -0.8479052}
+  - {x: -0.609797, y: -0.66272706}
+  - {x: -1.7571254, y: -0.8776402}
+  - {x: -1.2497249, y: -1.3068634}
+  - {x: -0.48615217, y: -1.2956533}
+  - {x: 0.12876272, y: -1.4691951}
+  - {x: 0.45774126, y: -1.6733127}
+  - {x: 0.3470955, y: -2.0321062}
+  - {x: 2.9305258, y: -2.0407903}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &809207213
 GameObject:
   m_ObjectHideFlags: 0
@@ -7045,7 +7102,7 @@ MonoBehaviour:
   Generator: {fileID: 1912395143}
   MaxAttempts: 50
   SafeZoneTiles: 5
-  ClearZoneSize: {x: 3, y: 3}
+  ClearZoneSize: {x: 7, y: 7}
   SpawnOnlyOnNewGame: 1
 --- !u!4 &1601836106
 Transform:
