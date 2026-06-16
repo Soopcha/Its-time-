@@ -47,6 +47,7 @@ public class VladSpawner : MonoBehaviour
             int x = Random.Range(SafeZoneTiles, mapSize.x - SafeZoneTiles);
             int y = Random.Range(SafeZoneTiles, mapSize.y - SafeZoneTiles);
 
+            //  ТОЛЬКО БОЛОТО
             if (IsSwampTile(x, y))
             {
                 Vector3 position = new Vector3(x * tileSize, y * tileSize, 0);
@@ -63,12 +64,12 @@ public class VladSpawner : MonoBehaviour
                 Vector2 clearSize = ClearZoneSize * tileSize;
                 Generator.AddForbiddenZone(position, clearSize);
 
-                Debug.Log($"Дом Влада заспавнен на болоте в ({x}, {y})");
+                Debug.Log($" Дом Влада заспавнен НА БОЛОТЕ в ({x}, {y})");
                 return;
             }
         }
 
-        Debug.LogWarning("Не удалось найти место для дома Влада!");
+        Debug.LogWarning(" Не удалось найти подходящее место на болоте для дома Влада!");
     }
 
     bool IsSwampTile(int x, int y)
@@ -78,6 +79,7 @@ public class VladSpawner : MonoBehaviour
         var zoneType = Generator.PerlinNoise.GetZoneType(x, y,
             Generator.MapSize.x, Generator.MapSize.y);
 
+        // ВОЗВРАЩАЕТ TRUE ТОЛЬКО ДЛЯ БОЛОТА
         return zoneType == PerlinNoiseMap.ZoneType.Swamp;
     }
 }

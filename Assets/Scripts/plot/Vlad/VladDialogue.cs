@@ -136,25 +136,25 @@ public class VladDialogue : MonoBehaviour
                 if (action == "FOLLOW")
                 {
                     hasFollowed = true;
-                    Debug.Log("Проследила за Владом - запуск плохой концовки");
-                    ShowBadEnding2();
+                    Debug.Log("Проследила за Владом - запуск ИСТИННОЙ концовки");
+                    ShowTrueEnding();
                 }
                 else if (action == "STAY")
                 {
                     hasFollowed = false;
-                    Debug.Log("Не следила - запуск хорошей концовки");
+                    Debug.Log("Не следила - запуск хорошей концовки 2");
                     ShowGoodEnding2();
                 }
             }
         );
     }
 
-    // ===== ПЛОХАЯ КОНЦОВКА 2 =====
-    void ShowBadEnding2()
+    // ===== ИСТИННАЯ КОНЦОВКА (узнала о ребёнке) =====
+    void ShowTrueEnding()
     {
         if (EndingScreen.Instance != null)
         {
-            EndingScreen.Instance.ShowBadEnding2();
+            EndingScreen.Instance.ShowTrueEnding();
         }
     }
 

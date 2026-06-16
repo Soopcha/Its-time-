@@ -26,8 +26,9 @@ public class DialogueManager : MonoBehaviour
     [Header("Портреты персонажей")]
     public Sprite PlayerPortrait;
     public Sprite PetrPortrait;
-    public Sprite NikaPortrait;  
-    public Sprite RomaPortrait;   
+    public Sprite NikaPortrait;
+    public Sprite RomaPortrait;
+    public Sprite VladPortrait;  // НОВОЕ
 
     private DialogueData currentData;
     private int currentNodeIndex;
@@ -140,14 +141,13 @@ public class DialogueManager : MonoBehaviour
         SpeakerText.text = line.Speaker;
         DialogueText.text = line.Text;
 
-        // ===== НОВОЕ: Показываем портрет =====
+        // Показываем портрет
         ShowPortrait(line);
 
         if (HintText != null)
             HintText.text = "Нажмите, чтобы продолжить";
     }
 
-    // ===== НОВЫЙ МЕТОД: Показ портрета =====
     void ShowPortrait(DialogueLine line)
     {
         if (PortraitImage == null) return;
@@ -190,6 +190,10 @@ public class DialogueManager : MonoBehaviour
         if (speaker == "Рома")
             return RomaPortrait;
 
+        // НОВОЕ: Портрет Влада
+        if (speaker == "Влад" || speaker == "Мужчина")
+            return VladPortrait;
+
         return null;
     }
 
@@ -231,11 +235,10 @@ public class DialogueManager : MonoBehaviour
         waitingForChoice = false;
         ChoicePanel.SetActive(false);
 
-        // ИСПРАВЛЕНИЕ: Сначала вызываем Action (например, добавляем очки)
+        // Сначала вызываем Action (например, добавляем очки)
         if (!string.IsNullOrEmpty(choice.Action))
         {
             onAction?.Invoke(choice.Action);
-            // НЕ завершаем диалог, а продолжаем!
         }
 
         // Переходим к следующему узлу
