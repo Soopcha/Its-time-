@@ -10,8 +10,11 @@ public class HouseSpawner : MonoBehaviour
     public int MaxAttempts = 50;
 
     [Header("Безопасная зона")]
-    [Tooltip("Отступ от края карты в тайлах")]
-    public int SafeZoneTiles = 5;  // Не спавнится ближе 3 тайлов к краю
+    public int SafeZoneTiles = 5;
+
+    [Header("Зона очистки от деревьев")]
+    [Tooltip("Радиус зоны вокруг дома где не будут спавниться деревья и камни (в тайлах)")]
+    public Vector2 ClearZoneSize = new Vector2(3, 3);  // 3x3 тайла
 
     [Header("Не спавнить если загрузка")]
     public bool SpawnOnlyOnNewGame = true;
@@ -42,7 +45,6 @@ public class HouseSpawner : MonoBehaviour
 
         for (int attempt = 0; attempt < MaxAttempts; attempt++)
         {
-            // Спавним с отступом от краёв
             int x = Random.Range(SafeZoneTiles, mapSize.x - SafeZoneTiles);
             int y = Random.Range(SafeZoneTiles, mapSize.y - SafeZoneTiles);
 
@@ -59,7 +61,11 @@ public class HouseSpawner : MonoBehaviour
                 saveable.SavePosition = true;
                 saveable.SaveActiveState = true;
 
-                Debug.Log($"Дом Петра заспавнен в ({x}, {y}) - в безопасной зоне");
+                // ===== НОВОЕ: Добавляем запрещённую зону =====
+                Vector2 clearSize = ClearZoneSize * tileSize;
+                Generator.AddForbiddenZone(position, clearSize);
+
+                Debug.Log($"Дом Петра заспавнен в ({x}, {y}) с зоной очистки {clearSize}");
                 return;
             }
         }

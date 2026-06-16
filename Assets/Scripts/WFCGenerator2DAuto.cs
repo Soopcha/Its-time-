@@ -20,13 +20,12 @@ public class WFCGenerator2DAuto : MonoBehaviour
     public bool UsePerlinZones = true;
 
     [Header("Настройки генерации")]
-    public int MaxRetries = 20;              // Максимум попыток
-    public bool ShowDebugLogs = true;        // Показывать логи
+    public int MaxRetries = 20;
+    public bool ShowDebugLogs = true;
 
     private List<Tile2DAuto>[,] possibleTiles;
     private Tile2DAuto.ZoneType[,] zoneMap;
 
-    // Счётчики для статистики
     private int currentRetryCount = 0;
     private int totalDeadEnds = 0;
 
@@ -38,11 +37,72 @@ public class WFCGenerator2DAuto : MonoBehaviour
     {
         public string TileNameContains = "";
         public Sprite OverlaySprite;
-        public Vector2 OffsetInTiles = new Vector2(-0.5f, 1.5f);  // Смещение в тайлах
+        public Vector2 OffsetInTiles = new Vector2(-0.5f, 1.5f);
     }
 
     [Header("Загрузка")]
     public bool ShouldGenerate = true;
+
+    // ===== Запрещённые зоны =====
+    private List<Bounds> forbiddenZones = new List<Bounds>();
+
+    // ===== НОВОЕ: Список всех заспавненных тайлов =====
+    private List<GameObject> spawnedTiles = new List<GameObject>();
+
+    public void AddForbiddenZone(Vector3 center, Vector2 size)
+    {
+        Bounds bounds = new Bounds(center, new Vector3(size.x, size.y, 0));
+        forbiddenZones.Add(bounds);
+        Debug.Log($"Запрещённая зона добавлена: центр={center}, размер={size}");
+
+        // ===== НОВОЕ: Удаляем уже существующие тайлы в этой зоне =====
+        RemoveTilesInZone(bounds);
+    }
+
+    // ===== НОВОЕ: Удаление тайлов в запрещённой зоне =====
+    void RemoveTilesInZone(Bounds zone)
+    {
+        int removedCount = 0;
+
+        for (int i = spawnedTiles.Count - 1; i >= 0; i--)
+        {
+            if (spawnedTiles[i] == null) continue;
+
+            Vector3 tilePos = spawnedTiles[i].transform.position;
+
+            if (zone.Contains(tilePos))
+            {
+                // Проверяем что это тайл с оверлеем (дерево/камень)
+                if (HasOverlay(spawnedTiles[i]))
+                {
+                    Debug.Log($" Удаляем тайл на позиции {tilePos} (в запрещённой зоне)");
+                    Destroy(spawnedTiles[i]);
+                    spawnedTiles.RemoveAt(i);
+                    removedCount++;
+                }
+            }
+        }
+
+        Debug.Log($" Удалено {removedCount} тайлов в запрещённой зоне");
+    }
+
+    // ===== НОВОЕ: Проверка есть ли у тайла оверлей =====
+    bool HasOverlay(GameObject tile)
+    {
+        // Проверяем по имени тайла
+        string tileName = tile.name;
+
+        foreach (var data in Overlays)
+        {
+            if (!string.IsNullOrEmpty(data.TileNameContains) &&
+                tileName.Contains(data.TileNameContains))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     void Start()
     {
@@ -65,7 +125,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
         {
             Debug.Log("Карта загружена из сохранения - генерация пропущена");
 
-            // НОВОЕ: Прячем LoadingScreen при загрузке
             if (LoadingScreen.Instance != null)
             {
                 LoadingScreen.Instance.Hide();
@@ -82,19 +141,12 @@ public class WFCGenerator2DAuto : MonoBehaviour
         StartCoroutine(GenerateAfterFrame());
     }
 
-    // НОВЫЙ МЕТОД
     IEnumerator GenerateAfterFrame()
     {
-        // Ждём 1 кадр чтобы UI загрузки отобразился
         yield return null;
-
-        // Генерируем карту
         GenerateWithRetry();
-
-        // Ждём ещё 1 кадр
         yield return null;
 
-        // Прячем загрузку
         if (LoadingScreen.Instance != null)
         {
             LoadingScreen.Instance.Hide();
@@ -110,7 +162,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
         }
     }
 
-    // НОВЫЙ МЕТОД: Генерация с повторными попытками
     public void GenerateWithRetry()
     {
         currentRetryCount = 0;
@@ -138,34 +189,27 @@ public class WFCGenerator2DAuto : MonoBehaviour
         {
             if (ShowDebugLogs && currentRetryCount > 1)
             {
-                Debug.Log($"? Карта сгенерирована с {currentRetryCount} попытки! Всего тупиков: {totalDeadEnds}");
+                Debug.Log($" Карта сгенерирована с {currentRetryCount} попытки! Всего тупиков: {totalDeadEnds}");
             }
             else if (ShowDebugLogs)
             {
-                Debug.Log($"? Карта сгенерирована с первой попытки!");
+                Debug.Log($" Карта сгенерирована с первой попытки!");
             }
         }
         else
         {
-            Debug.LogError($"? НЕ УДАЛОСЬ сгенерировать карту за {MaxRetries} попыток! Тупиков: {totalDeadEnds}");
-            Debug.LogWarning("Возможные причины:");
-            Debug.LogWarning("  - Тайлы плохо стыкуются между собой");
-            Debug.LogWarning("  - Слишком мало тайлов для какой-то зоны");
-            Debug.LogWarning("  - Края тайлов не совпадают по цветам");
+            Debug.LogError($" НЕ УДАЛОСЬ сгенерировать карту за {MaxRetries} попыток! Тупиков: {totalDeadEnds}");
         }
     }
 
-    // НОВЫЙ МЕТОД: Попытка генерации (возвращает true если успех)
     bool TryGenerate()
     {
-        // ШАГ 1: Генерируем карту зон
         if (UsePerlinZones && PerlinNoise != null)
         {
             PerlinNoise.RandomizeOffset();
             GenerateZoneMap();
         }
 
-        // ШАГ 2: Инициализируем WFC
         possibleTiles = new List<Tile2DAuto>[MapSize.x, MapSize.y];
 
         for (int x = 0; x < MapSize.x; x++)
@@ -174,7 +218,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
             {
                 possibleTiles[x, y] = GetTilesForZone(x, y);
 
-                // Проверяем что есть хотя бы один тайл для этой клетки
                 if (possibleTiles[x, y].Count == 0)
                 {
                     if (ShowDebugLogs)
@@ -187,10 +230,8 @@ public class WFCGenerator2DAuto : MonoBehaviour
             }
         }
 
-        // ШАГ 3: Основной цикл WFC
         int iterations = 0;
         int maxIterations = MapSize.x * MapSize.y * 10;
-        int deadEndsThisRun = 0;
 
         while (iterations++ < maxIterations)
         {
@@ -201,12 +242,10 @@ public class WFCGenerator2DAuto : MonoBehaviour
 
             Vector2Int pos = minPos.Value;
 
-            // Проверка на тупик
             if (possibleTiles[pos.x, pos.y].Count == 0)
             {
-                deadEndsThisRun++;
                 totalDeadEnds++;
-                return false;  // Тупик — возвращаем неудачу
+                return false;
             }
 
             currentZone = GetZoneAtPosition(pos.x, pos.y);
@@ -216,7 +255,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
             Propagate(pos);
         }
 
-        // ШАГ 4: Проверяем что ВСЕ клетки заполнены
         if (!IsMapFullyGenerated())
         {
             if (ShowDebugLogs)
@@ -227,13 +265,11 @@ public class WFCGenerator2DAuto : MonoBehaviour
             return false;
         }
 
-        // ШАГ 5: Размещаем тайлы
         PlaceTiles();
 
         return true;
     }
 
-    // НОВЫЙ МЕТОД: Проверка что все клетки заполнены
     bool IsMapFullyGenerated()
     {
         for (int x = 0; x < MapSize.x; x++)
@@ -247,7 +283,6 @@ public class WFCGenerator2DAuto : MonoBehaviour
         return true;
     }
 
-    // НОВЫЙ МЕТОД: Подсчёт пустых клеток
     int CountEmptyCells()
     {
         int count = 0;
@@ -447,20 +482,22 @@ public class WFCGenerator2DAuto : MonoBehaviour
                     Vector3 position = new Vector3(x * TileSize, y * TileSize, 0);
                     GameObject placed = Instantiate(prefab.gameObject, position, Quaternion.identity, transform);
 
+                    // ===== НОВОЕ: Сохраняем заспавненный тайл =====
+                    spawnedTiles.Add(placed);
+
                     SpriteRenderer sr = placed.GetComponent<SpriteRenderer>();
                     if (sr != null)
                     {
                         sr.sortingOrder = 0;
                     }
 
-                    // Передаём Y позицию!
-                    TryAddOverlay(placed, prefab.name, y * TileSize);
+                    TryAddOverlay(placed, prefab.name, position);
                 }
             }
         }
     }
 
-    void TryAddOverlay(GameObject tile, string tileName, float tileY)
+    void TryAddOverlay(GameObject tile, string tileName, Vector3 tilePosition)
     {
         foreach (var data in Overlays)
         {
@@ -473,7 +510,7 @@ public class WFCGenerator2DAuto : MonoBehaviour
                 overlay.OverlaySprite = data.OverlaySprite;
                 overlay.BaseOverlayOrder = 10000;
                 overlay.OverlaySortingLayer = "Player";
-                overlay.BaseY = tileY;
+                overlay.BaseY = tilePosition.y;
                 overlay.PixelsPerUnit = 32f;
                 overlay.OffsetInTiles = data.OffsetInTiles;
 
@@ -481,11 +518,15 @@ public class WFCGenerator2DAuto : MonoBehaviour
             }
         }
     }
+
     public void ClearMap()
     {
         foreach (Transform child in transform)
         {
             Destroy(child.gameObject);
         }
+
+        forbiddenZones.Clear();
+        spawnedTiles.Clear();  // ===== НОВОЕ =====
     }
 }
