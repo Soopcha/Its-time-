@@ -8,7 +8,8 @@ public class GameState : MonoBehaviour
     public bool HasReadNote = false;
     public bool HasKey = false;
     public bool PetrCutsceneDone = false;
-    public bool NikaCutsceneDone = false;  // ÍÎÂÎÅ
+    public bool NikaCutsceneDone = false;
+    public bool VladCutsceneDone = false;
 
     // Âğåìÿ èãğû
     public float PlayTime = 0f;
