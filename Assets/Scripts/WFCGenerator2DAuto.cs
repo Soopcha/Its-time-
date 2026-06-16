@@ -59,18 +59,19 @@ public class WFCGenerator2DAuto : MonoBehaviour
         ReplaceTilesInZone(bounds);  // ? ИЗМЕНЕНО: заменяем вместо удаления
     }
 
-    // ===== ИЗМЕНЕНО: Заменяем тайлы вместо удаления =====
     void ReplaceTilesInZone(Bounds zone)
     {
         if (ReplacementTile == null)
         {
-            Debug.LogWarning(" ReplacementTile не назначен! Тайлы будут удалены.");
+            Debug.LogWarning("?? ReplacementTile не назначен! Тайлы будут удалены.");
             RemoveTilesInZone(zone);
             return;
         }
 
         int replacedCount = 0;
+        HashSet<GameObject> tilesToReplace = new HashSet<GameObject>();
 
+        // Находим все тайлы в зоне
         for (int i = spawnedTiles.Count - 1; i >= 0; i--)
         {
             if (spawnedTiles[i] == null) continue;
@@ -81,28 +82,71 @@ public class WFCGenerator2DAuto : MonoBehaviour
             {
                 if (HasOverlay(spawnedTiles[i]))
                 {
-                    // Удаляем старый тайл
-                    GameObject oldTile = spawnedTiles[i];
-                    spawnedTiles.RemoveAt(i);
-                    Destroy(oldTile);
+                    tilesToReplace.Add(spawnedTiles[i]);
 
-                    // Спавним замену (траву)
-                    GameObject newTile = Instantiate(
-                        ReplacementTile.gameObject,
-                        tilePos,
-                        Quaternion.identity,
-                        transform
-                    );
-
-                    spawnedTiles.Add(newTile);
-
-                    Debug.Log($" Заменили тайл на {ReplacementTile.name} в позиции {tilePos}");
-                    replacedCount++;
+                    // ===== НОВОЕ: Если это часть дерева — ищем соседние части =====
+                    if (IsTreePart(spawnedTiles[i]))
+                    {
+                        FindAdjacentTreeParts(spawnedTiles[i], tilesToReplace);
+                    }
                 }
             }
         }
 
+        // Заменяем все найденные тайлы
+        foreach (var oldTile in tilesToReplace)
+        {
+            if (oldTile == null) continue;
+
+            Vector3 tilePos = oldTile.transform.position;
+
+            spawnedTiles.Remove(oldTile);
+            Destroy(oldTile);
+
+            // Спавним замену (траву)
+            GameObject newTile = Instantiate(
+                ReplacementTile.gameObject,
+                tilePos,
+                Quaternion.identity,
+                transform
+            );
+
+            spawnedTiles.Add(newTile);
+            replacedCount++;
+        }
+
         Debug.Log($" Заменено {replacedCount} тайлов на {ReplacementTile.name}");
+    }
+
+    // ===== НОВОЕ: Проверка что тайл — это часть дерева =====
+    bool IsTreePart(GameObject tile)
+    {
+        string tileName = tile.name.Replace("(Clone)", "");
+        return tileName.Contains("Part") || tileName.Contains("part");
+    }
+
+    // ===== НОВОЕ: Рекурсивный поиск соседних частей дерева =====
+    void FindAdjacentTreeParts(GameObject treePart, HashSet<GameObject> foundParts)
+    {
+        Vector3 pos = treePart.transform.position;
+        float searchRadius = TileSize * 1.5f; // Ищем в радиусе 1.5 тайла
+
+        foreach (var tile in spawnedTiles)
+        {
+            if (tile == null || foundParts.Contains(tile)) continue;
+
+            if (IsTreePart(tile))
+            {
+                float distance = Vector3.Distance(pos, tile.transform.position);
+
+                if (distance < searchRadius)
+                {
+                    foundParts.Add(tile);
+                    // Рекурсивно ищем соседей этого тайла
+                    FindAdjacentTreeParts(tile, foundParts);
+                }
+            }
+        }
     }
 
     // ===== Старый метод (на случай если ReplacementTile не назначен) =====

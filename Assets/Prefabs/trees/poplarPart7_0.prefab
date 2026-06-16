@@ -107,8 +107,8 @@ MonoBehaviour:
   SpriteRenderer: {fileID: 8446292539035334962}
   ZoneWeights:
   - Zone: 2
-    Weight: 50
-  DefaultWeight: 50
+    Weight: 100
+  DefaultWeight: 100
   TopEdge:
   - {r: 0.22745098, g: 0.34901962, b: 0.25490198, a: 1}
   - {r: 0.22745098, g: 0.34901962, b: 0.25490198, a: 1}
