@@ -30,4 +30,22 @@ public class GameState : MonoBehaviour
     {
         PlayTime += Time.deltaTime;
     }
+
+    // ===== НОВЫЕ МЕТОДЫ =====
+
+    /// <summary>
+    /// Можно ли войти к Нике? (Требует встречи с Петром)
+    /// </summary>
+    public bool CanEnterBus()
+    {
+        return PetrCutsceneDone;
+    }
+
+    /// <summary>
+    /// Можно ли войти к Владу? (Требует встречи с Петром И Никой)
+    /// </summary>
+    public bool CanEnterVladHouse()
+    {
+        return PetrCutsceneDone && NikaCutsceneDone;
+    }
 }

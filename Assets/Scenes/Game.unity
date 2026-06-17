@@ -1472,7 +1472,7 @@ Transform:
   m_GameObject: {fileID: 446464489}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.41000366, y: -1.8299999, z: 0}
+  m_LocalPosition: {x: -0.095, y: -1.567, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6319,7 +6319,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.015911102, y: -1.8561783}
+  m_Offset: {x: -0.013282776, y: -1.955943}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -6329,7 +6329,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.79846954, y: 0.3848095}
+  m_Size: {x: 0.8037262, y: 0.18528008}
   m_EdgeRadius: 0
 --- !u!1 &1502836353
 GameObject:
@@ -7148,6 +7148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7ae90214848d7741a286a965968e1ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PetrsHouseInterior
+  ExitOffset: {x: -2, y: -2, z: 0}
   InteriorRoot: {fileID: 1708767899}
   PlayerSpawnPoint: {fileID: 1204517134}
   ExitPoint: {fileID: 437700127}
@@ -8237,6 +8238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bbcff4ee445d044586ade233ab720a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BusInterior
+  ExitOffset: {x: -1, y: -2, z: 0}
   InteriorRoot: {fileID: 561916748}
   PlayerSpawnPoint: {fileID: 446464490}
 --- !u!4 &1806055374
@@ -8248,7 +8250,7 @@ Transform:
   m_GameObject: {fileID: 1806055372}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -70.9227, y: 4.61889, z: 0}
+  m_LocalPosition: {x: -71.1, y: 4.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8326,6 +8328,50 @@ MonoBehaviour:
   NikaPortrait: {fileID: -8913495877623649551, guid: 0d8f06e94a3faaf4292d95cd1c192820, type: 3}
   RomaPortrait: {fileID: -497227895472409792, guid: b537f4d2926b9bc489440976c2814e0f, type: 3}
   VladPortrait: {fileID: 4846502171467417176, guid: c3671ac496e32574b89a7f9dfcb0dd9c, type: 3}
+--- !u!1 &1850129359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1850129361}
+  - component: {fileID: 1850129360}
+  m_Layer: 0
+  m_Name: IntroDialogueManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1850129360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850129359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112eacc094c215848a5890d72c9ce333, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IntroDialogue
+--- !u!4 &1850129361
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850129359}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1850471167
 GameObject:
   m_ObjectHideFlags: 0
@@ -10067,3 +10113,4 @@ SceneRoots:
   - {fileID: 804391221}
   - {fileID: 2038602015}
   - {fileID: 1601836106}
+  - {fileID: 1850129361}

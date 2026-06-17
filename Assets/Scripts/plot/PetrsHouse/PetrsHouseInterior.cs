@@ -4,6 +4,10 @@ public class PetrsHouseInterior : MonoBehaviour
 {
     public static PetrsHouseInterior Instance;
 
+    [Header("Настройки выхода")]  //  НОВОЕ
+    public Vector3 ExitOffset = new Vector3(-2f, -1f, 0f);  // Смещение при выходе
+
+
     [Header("Настройки интерьера")]
     public GameObject InteriorRoot;
     public Transform PlayerSpawnPoint;
@@ -62,7 +66,7 @@ public class PetrsHouseInterior : MonoBehaviour
         // Возвращаем игрока наружу
         if (player != null)
         {
-            player.transform.position = outsidePosition;
+            player.transform.position = outsidePosition + ExitOffset;
         }
 
         CameraFollow cam = Camera.main.GetComponent<CameraFollow>();

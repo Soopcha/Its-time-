@@ -14,6 +14,13 @@ public class Bus : MonoBehaviour
 
         if (playerInRange)
         {
+            // ПРОВЕРКА: Можно ли войти?
+            if (!GameState.Instance.CanEnterBus())
+            {
+                InteractButtonManager.Instance?.ShowButton("Закрыто", null);
+                return;
+            }
+
             InteractButtonManager.Instance?.ShowButton("Войти в автобус", EnterBus);
         }
     }

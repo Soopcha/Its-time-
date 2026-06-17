@@ -14,6 +14,14 @@ public class VladHouse : MonoBehaviour
 
         if (playerInRange)
         {
+            // НОВОЕ: Проверка доступности
+            if (!GameState.Instance.CanEnterVladHouse())
+            {
+                // Показываем сообщение что закрыто (без функции клика)
+                InteractButtonManager.Instance?.ShowButton("Закрыто", null);
+                return;
+            }
+
             InteractButtonManager.Instance?.ShowButton("Войти в дом", EnterHouse);
         }
     }
