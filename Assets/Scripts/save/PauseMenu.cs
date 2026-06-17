@@ -10,7 +10,7 @@ public class PauseMenu : MonoBehaviour
     public GameObject SettingsPanel;
 
     [Header("Кнопка паузы (в игре)")]
-    public Button PauseButton;  // НОВОЕ - кнопка для открытия паузы
+    public Button PauseButton;
 
     [Header("Кнопки главного меню паузы")]
     public Button ResumeButton;
@@ -33,36 +33,36 @@ public class PauseMenu : MonoBehaviour
 
     void Start()
     {
+        //  ПРОВЕРКА SaveManager при старте
+        if (SaveManager.Instance == null)
+        {
+            Debug.LogError(" SaveManager не найден! Убедись что в сцене есть объект SaveManager.");
+        }
+
         PausePanel.SetActive(false);
         SaveSlotsPanel.SetActive(false);
         SettingsPanel.SetActive(false);
 
-        // НОВОЕ: Показываем кнопку паузы
         if (PauseButton != null)
         {
             PauseButton.gameObject.SetActive(true);
             PauseButton.onClick.AddListener(Pause);
         }
 
-        // Главное меню паузы
         ResumeButton.onClick.AddListener(Resume);
         SaveButton.onClick.AddListener(ShowSaveSlots);
         SettingsButton.onClick.AddListener(OpenSettings);
         MainMenuButton.onClick.AddListener(ReturnToMenu);
 
-        // Кнопки слотов
         Slot1Button.onClick.AddListener(() => SaveToSlot(1));
         Slot2Button.onClick.AddListener(() => SaveToSlot(2));
         Slot3Button.onClick.AddListener(() => SaveToSlot(3));
         BackFromSlotsButton.onClick.AddListener(HideSaveSlots);
 
-        // Настройки
         BackFromSettingsButton.onClick.AddListener(HideSettings);
 
-        // Загружаем сохранённые настройки
         LoadSettings();
 
-        // Привязываем события
         MusicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
         SFXVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
     }
@@ -79,7 +79,7 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    public void Pause()  // Теперь public чтобы кнопка могла вызвать
+    public void Pause()
     {
         isPaused = true;
         PausePanel.SetActive(true);
@@ -87,7 +87,6 @@ public class PauseMenu : MonoBehaviour
         SettingsPanel.SetActive(false);
         Time.timeScale = 0f;
 
-        // НОВОЕ: Скрываем кнопку паузы
         if (PauseButton != null)
             PauseButton.gameObject.SetActive(false);
     }
@@ -100,7 +99,6 @@ public class PauseMenu : MonoBehaviour
         SettingsPanel.SetActive(false);
         Time.timeScale = 1f;
 
-        // НОВОЕ: Показываем кнопку паузы обратно
         if (PauseButton != null)
             PauseButton.gameObject.SetActive(true);
     }
@@ -127,6 +125,13 @@ public class PauseMenu : MonoBehaviour
 
     void UpdateSlotButton(Button button, int slotIndex)
     {
+        //  ПРОВЕРКА на null
+        if (SaveManager.Instance == null)
+        {
+            Debug.LogError("? SaveManager.Instance == null в UpdateSlotButton!");
+            return;
+        }
+
         bool exists = SaveManager.Instance.SlotExists(slotIndex);
 
         TMPro.TMP_Text buttonText = button.GetComponentInChildren<TMPro.TMP_Text>();
@@ -152,10 +157,17 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
-    void SaveToSlot(int slotIndex)
+    void SaveToSlot(int slotIndex)  // ? Строка 157 была здесь
     {
+        // ? ПРОВЕРКА на null перед сохранением
+        if (SaveManager.Instance == null)
+        {
+            Debug.LogError(" SaveManager.Instance == null! Невозможно сохранить игру.");
+            return;
+        }
+
         SaveManager.Instance.SaveGame(slotIndex);
-        Debug.Log($" Сохранено в слот {slotIndex}");
+        Debug.Log($"Сохранено в слот {slotIndex}");
         UpdateSlotButtons();
     }
 

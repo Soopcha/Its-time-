@@ -19,6 +19,7 @@ public class SaveData
     public bool HasKey;
     public bool PetrCutsceneDone;
     public bool NikaCutsceneDone;  // ÍÎÂÎÅ
+    public bool VladCutsceneDone;
 
     // Êàğòà
     public int MapSeed;
@@ -41,6 +42,10 @@ public class SaveData
 
     // NPC
     public List<SaveableNPCData> NPCs = new List<SaveableNPCData>();
+
+    // Äîì Âëàäà —  ÍÎÂÎÅ
+    public bool HasVladHouse = false;
+    public Vector2 VladHousePosition;
 
     public SaveData()
     {

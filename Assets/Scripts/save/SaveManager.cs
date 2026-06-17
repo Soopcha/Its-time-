@@ -126,7 +126,8 @@ public class SaveManager : MonoBehaviour
             data.HasReadNote = GameState.Instance.HasReadNote;
             data.HasKey = GameState.Instance.HasKey;
             data.PetrCutsceneDone = GameState.Instance.PetrCutsceneDone;
-            data.NikaCutsceneDone = GameState.Instance.NikaCutsceneDone;  // НОВОЕ
+            data.NikaCutsceneDone = GameState.Instance.NikaCutsceneDone;
+            data.VladCutsceneDone = GameState.Instance.VladCutsceneDone;
             data.PlayTime = GameState.Instance.PlayTime;
         }
 
@@ -186,13 +187,22 @@ public class SaveManager : MonoBehaviour
             Debug.Log($"Сохраняем дом в позиции: {data.HousePosition}");
         }
 
-        // Автобус — НОВОЕ
+        // Автобус 
         GameObject bus = GameObject.Find("Bus(Clone)");
         if (bus != null)
         {
             data.HasBus = true;
             data.BusPosition = bus.transform.position;
             Debug.Log($"Сохраняем автобус в позиции: {data.BusPosition}");
+        }
+
+        //НОВОЕ: Дом Влада
+        GameObject vladHouse = GameObject.Find("VladHouse(Clone)");
+        if (vladHouse != null)
+        {
+            data.HasVladHouse = true;
+            data.VladHousePosition = vladHouse.transform.position;
+            Debug.Log($"Сохраняем дом Влада в позиции: {data.VladHousePosition}");
         }
 
         return data;
@@ -224,7 +234,8 @@ public class SaveManager : MonoBehaviour
             GameState.Instance.HasReadNote = data.HasReadNote;
             GameState.Instance.HasKey = data.HasKey;
             GameState.Instance.PetrCutsceneDone = data.PetrCutsceneDone;
-            GameState.Instance.NikaCutsceneDone = data.NikaCutsceneDone;  // НОВОЕ
+            GameState.Instance.NikaCutsceneDone = data.NikaCutsceneDone;
+            GameState.Instance.VladCutsceneDone = data.VladCutsceneDone;
             GameState.Instance.PlayTime = data.PlayTime;
         }
 
@@ -283,6 +294,26 @@ public class SaveManager : MonoBehaviour
                 saveable.SaveActiveState = true;
 
                 Debug.Log($"Автобус восстановлен в позиции: {data.BusPosition}");
+            }
+        }
+
+        // НОВОЕ: Дом Влада
+        if (data.HasVladHouse)
+        {
+            VladSpawner spawner = FindObjectOfType<VladSpawner>();
+            if (spawner != null && spawner.VladHousePrefab != null)
+            {
+                GameObject vladHouse = Instantiate(spawner.VladHousePrefab, data.VladHousePosition, Quaternion.identity);
+
+                SaveableObject saveable = vladHouse.GetComponent<SaveableObject>();
+                if (saveable == null)
+                {
+                    saveable = vladHouse.AddComponent<SaveableObject>();
+                }
+                saveable.SavePosition = true;
+                saveable.SaveActiveState = true;
+
+                Debug.Log($"Дом Влада восстановлен в позиции: {data.VladHousePosition}");
             }
         }
 
